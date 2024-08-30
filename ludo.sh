@@ -1278,37 +1278,35 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
               root_use
 
               # 去掉 #Port 的注释
-                while true; do
-                    clear
-                    sed -i 's/#Port/Port/' /etc/ssh/sshd_config
+                clear
+                sed -i 's/#Port/Port/' /etc/ssh/sshd_config
 
-                    # 读取当前的 SSH 端口号
-                    current_port=$(grep -E '^ *Port [0-9]+' /etc/ssh/sshd_config | awk '{print $2}')
+                # 读取当前的 SSH 端口号
+                current_port=$(grep -E '^ *Port [0-9]+' /etc/ssh/sshd_config | awk '{print $2}')
 
-                    # 打印当前的 SSH 端口号
-                    echo -e "当前的 SSH 端口号是:  ${huang}$current_port ${bai}"
+                # 打印当前的 SSH 端口号
+                echo -e "当前的 SSH 端口号是:  ${huang}$current_port ${bai}"
 
-                    echo "------------------------"
-                    echo "端口号范围1到65535之间的数字。（输入0退出）"
+                echo "------------------------"
+                echo "端口号范围1到65535之间的数字。（输入0退出）"
 
-                    # 提示用户输入新的 SSH 端口号
-                    read -p "请输入新的 SSH 端口号: " new_port
+                # 提示用户输入新的 SSH 端口号
+                read -p "请输入新的 SSH 端口号: " new_port
 
-                    # 判断端口号是否在有效范围内
-                    if [[ $new_port =~ ^[0-9]+$ ]]; then  # 检查输入是否为数字
-                        if [[ $new_port -ge 1 && $new_port -le 65535 ]]; then
-                            new_ssh_port
-                        elif [[ $new_port -eq 0 ]]; then
-                            break
-                        else
-                            echo "端口号无效，请输入1到65535之间的数字。"
-                            break_end
-                        fi
+                # 判断端口号是否在有效范围内
+                if [[ $new_port =~ ^[0-9]+$ ]]; then  # 检查输入是否为数字
+                    if [[ $new_port -ge 1 && $new_port -le 65535 ]]; then
+                        new_ssh_port
+                    elif [[ $new_port -eq 0 ]]; then
+                        break
                     else
-                        echo "输入无效，请输入数字。"
+                        echo "端口号无效，请输入1到65535之间的数字。"
                         break_end
                     fi
-                done
+                else
+                    echo "输入无效，请输入数字。"
+                    break_end
+                fi
               ;;
 
 
