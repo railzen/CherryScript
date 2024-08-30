@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.0.9118 Build240830"
+main_version="V1.0.9120 Build240831"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
