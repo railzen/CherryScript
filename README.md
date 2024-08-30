@@ -22,5 +22,5 @@ curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh 
 ### Cherry一键脚本 的支持列表：
 - Debian
 - Ubuntu
-- 由于Cent OS已经停止支持，现在从支持列表移除
+- CentOS 由于已经停止支持，现在从支持列表移除
 ***
