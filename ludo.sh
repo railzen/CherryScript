@@ -1118,7 +1118,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
         #choice=y
         #if [ "$choice" == "y" ]; then
     clear
-    bash -c "$(curl -sL https://raw.githubusercontent.com/railzen/CherryScript/main/snell/Snell_v2.sh)"
+    bash -c "$(curl -sL https://raw.githubusercontent.com/railzen/CherryScript/main/snell/snell_v2.sh)"
     ;;
 
   11)
