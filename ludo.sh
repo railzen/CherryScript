@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.0.9120 Build240831"
+main_version="V1.0.9130 Build240907"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -1118,7 +1118,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
         #choice=y
         #if [ "$choice" == "y" ]; then
     clear
-    bash -c "$(curl -sL https://raw.githubusercontent.com/railzen/CherryScript/main/snell/snell_v2.sh)"
+    bash -c "$(curl -sL https://raw.githubusercontent.com/railzen/CherryScript/main/snell/snell.sh)"
     ;;
 
   11)
@@ -1128,7 +1128,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
 
   12)
     clear
-    curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box_v2.sh && chmod +x sing_box_v2.sh && ./sing_box_v2.sh
+    curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box_main.sh && chmod +x sing_box_main.sh && ./sing_box_main.sh
     ;;
 
   13)
