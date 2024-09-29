@@ -7462,13 +7462,13 @@ menu() {
         ;;
 
     10)
-        curl -sS -O https://raw.githubusercontent.com/railzen/DownloadStation/main/Shell/sing_box.sh && chmod +x sing_box.sh && ./sing_box.sh install_ss2022
+        curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box.sh && chmod +x sing_box.sh && ./sing_box.sh install_ss2022
         ;;
     11)
-        curl -sS -O https://raw.githubusercontent.com/railzen/DownloadStation/main/Shell/sing_box.sh && chmod +x sing_box.sh && ./sing_box.sh uninstall_ss2022
+        curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box.sh && chmod +x sing_box.sh && ./sing_box.sh uninstall_ss2022
         ;;
     12)
-        curl -sS -O https://raw.githubusercontent.com/railzen/DownloadStation/main/Shell/sing_box.sh && chmod +x sing_box.sh && ./sing_box.sh
+        curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box.sh && chmod +x sing_box.sh && ./sing_box.sh
         exit 0
         ;;
     20)
