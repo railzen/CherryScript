@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.0.9130 Build240907"
+main_version="V1.0.920 Build241117"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -4703,8 +4703,24 @@ mv -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 cp -f ${work_path}/ludo.sh /usr/local/bin/ludo > /dev/null 2>&1
 cd ${work_path}/work
 
-# 检查依赖及展示菜单
-chech_dependance
-main_menu_start
+if [ -f /usr/local/bin/ludo ]; then
+    # 存在文件，检查依赖及展示菜单
+    chech_dependance
+    main_menu_start
+else
+    read -p "It's first run, Install dependencies？[Y/n] " yn
+    [[ -z "${yn}" ]] && yn="y"
+    if [[ ${yn} == [Yy] ]]; then
+        install curl wget sudo net-tools ufw
+        # 存在文件，检查依赖及展示菜单
+        chech_dependance
+        main_menu_start
+    else
+        # 存在文件，检查依赖及展示菜单
+        chech_dependance
+        main_menu_start
+    fi
+fi
+
 
 #卸载命令：rm -rf /opt/CherryScript/ /usr/local/bin/ludo
