@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.0.920 Build241117"
+main_version="V1.0.921 Build241117"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -4678,7 +4678,19 @@ clear
 [ "$EUID" -ne 0 ] && echo -e "${Yellow}请注意，该功能需要root用户才能运行！${White}" && break_end && back_main
 }
 
-chech_dependance(){ if [ ! -f /usr/bin/curl ]; then install curl; fi; }
+chech_dependance() { 
+# 检查CURL
+if [ ! -f /usr/bin/curl ]; then install curl; fi; 
+# 检查是否之前安装，如果没安装过的话，询问安装依赖
+if [ ! -f /usr/local/bin/ludo ]; then
+    read -p "It's first run, Install dependencies？[Y/n] " yn
+    # 如果是回车，也当作y
+    [[ -z "${yn}" ]] && yn="y"
+    if [[ ${yn} == [Yy] ]]; then
+        install curl wget sudo net-tools ufw
+    fi
+fi
+}
 
 # 脚本从此处开始
 if [[ ! $# = 0 && $1 = "dir" ]];then
@@ -4703,24 +4715,11 @@ mv -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 cp -f ${work_path}/ludo.sh /usr/local/bin/ludo > /dev/null 2>&1
 cd ${work_path}/work
 
-if [ -f /usr/local/bin/ludo ]; then
-    # 存在文件，检查依赖及展示菜单
-    chech_dependance
-    main_menu_start
-else
-    read -p "It's first run, Install dependencies？[Y/n] " yn
-    [[ -z "${yn}" ]] && yn="y"
-    if [[ ${yn} == [Yy] ]]; then
-        install curl wget sudo net-tools ufw
-        # 存在文件，检查依赖及展示菜单
-        chech_dependance
-        main_menu_start
-    else
-        # 存在文件，检查依赖及展示菜单
-        chech_dependance
-        main_menu_start
-    fi
-fi
+
+# 存在文件，检查依赖及展示菜单
+chech_dependance
+main_menu_start
+
 
 
 #卸载命令：rm -rf /opt/CherryScript/ /usr/local/bin/ludo
