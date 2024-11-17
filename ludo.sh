@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.0.921 Build241117"
+main_version="V1.0.922 Build241117"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -4678,7 +4678,14 @@ clear
 [ "$EUID" -ne 0 ] && echo -e "${Yellow}请注意，该功能需要root用户才能运行！${White}" && break_end && back_main
 }
 
+# 检查变量和初始化变量
 chech_dependance() { 
+# 初始化变量
+Yellow='\033[33m'; White='\033[0m'; Green='\033[0;32m'; Blue='\033[0;34m'; Red='\033[31m'; Gray='\e[37m'; LightBlue='\033[96m'; DarkYellow='\033[93m'
+SYSCTLCONF=/etc/sysctl.conf
+GAICONF=/etc/gai.conf
+MARK="# CherryModified"
+
 # 检查CURL
 if [ ! -f /usr/bin/curl ]; then install curl; fi; 
 # 检查是否之前安装，如果没安装过的话，询问安装依赖
@@ -4690,9 +4697,16 @@ if [ ! -f /usr/local/bin/ludo ]; then
         install curl wget sudo net-tools ufw
     fi
 fi
+
+# 初始化环境
+mkdir ${work_path} > /dev/null 2>&1
+mkdir ${work_path}/work > /dev/null 2>&1
+mv -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
+cp -f ${work_path}/ludo.sh /usr/local/bin/ludo > /dev/null 2>&1
+cd ${work_path}/work
 }
 
-# 脚本从此处开始
+# =====================================脚本从此处开始 =========================================
 if [[ ! $# = 0 && $1 = "dir" ]];then
     cd ${work_path}/work
     exit 0
@@ -4701,20 +4715,6 @@ elif [[ ! $# = 0 && $1 = "restart" ]];then
     ls /etc/systemd/system | grep Cherry- | xargs systemctl restart
     exit 0
 fi
-
-# 初始化变量
-Yellow='\033[33m'; White='\033[0m'; Green='\033[0;32m'; Blue='\033[0;34m'; Red='\033[31m'; Gray='\e[37m'; LightBlue='\033[96m'; DarkYellow='\033[93m'
-SYSCTLCONF=/etc/sysctl.conf
-GAICONF=/etc/gai.conf
-MARK="# CherryModified"
-
-# 初始化环境
-mkdir ${work_path} > /dev/null 2>&1
-mkdir ${work_path}/work > /dev/null 2>&1
-mv -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
-cp -f ${work_path}/ludo.sh /usr/local/bin/ludo > /dev/null 2>&1
-cd ${work_path}/work
-
 
 # 存在文件，检查依赖及展示菜单
 chech_dependance
