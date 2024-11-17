@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.0.930 Build241118"
+main_version="V1.0.931 Build241118"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -1174,7 +1174,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
           1)
               clear
               read -p "请输入你的快捷按键: " kuaijiejian
-              cp /usr/local/bin/ludo /usr/local/bin/${kuaijiejian}
+              ln -sf /usr/local/bin/ludo /usr/local/bin/${kuaijiejian}
               echo "快捷键已设置"
               ;;
 
