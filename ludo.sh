@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.0.931 Build241118"
+main_version="V1.0.94 Build250222"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -14,7 +14,7 @@ echo                " | |    |  __  |  __| |  _  /|  _  / \   /  "
 echo                " | |____| |  | | |____| | \ \| | \ \  | |   "
 echo -e             "  \_____|_|  |_|______|_|  \_\_|  \_\ |_|   ${White}\n"
 
-echo -e "${LightBlue}Cherry Script $main_version(Support for Ubuntu/Debian/CentOS)${White}"
+echo -e "${LightBlue}Cherry Script $main_version(Support for Ubuntu/Debian)${White}"
 echo -e "${LightBlue}Personal use, unauthorized use prohibited!${White}"
 echo -e "${LightBlue}------- Press ${DarkYellow}ludo${LightBlue} to start script -------${White}"
 echo "------------------------"
@@ -34,7 +34,11 @@ echo "13. 系统工具 ▶ "
 echo "14. 面板工具 ▶ "
 echo "15. 安装3X-UI "
 echo "------------------------"
-echo "99. 脚本更新"
+if [[ ${startup_check_new_version} == "true" ]]; then
+    echo "99. 脚本更新 ${red}*${White}"
+else
+    echo "99. 脚本更新"
+fi
 echo "------------------------"
 echo "0. 退出脚本"
 echo "------------------------"
@@ -4704,6 +4708,12 @@ mkdir ${work_path}/work > /dev/null 2>&1
 mv -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 cp -f ${work_path}/ludo.sh /usr/local/bin/ludo > /dev/null 2>&1
 cd ${work_path}/work
+
+sh_new_ver=$(curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh"|grep 'main_version="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1)
+	startup_check_new_version="false"
+	if [[ ${sh_new_ver} != ${main_version} ]]; then
+	    startup_check_new_version="true"
+	fi
 }
 
 # =====================================脚本从此处开始 =========================================
