@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.0.95 Build250222"
+main_version="V1.0.956 Build250222"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -35,7 +35,7 @@ echo "14. 面板工具 ▶ "
 echo "15. 安装3X-UI "
 echo "------------------------"
 if [[ ${startup_check_new_version} == "true" ]]; then
-    echo "99. 脚本更新 ${red}*${White}"
+    echo -e "99. 脚本更新 ${red}* ${White}"
 else
     echo "99. 脚本更新"
 fi
