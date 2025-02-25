@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.0.97 Build250222"
+main_version="V1.0.97 Build250226"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -14,7 +14,7 @@ echo                " | |    |  __  |  __| |  _  /|  _  / \   /  "
 echo                " | |____| |  | | |____| | \ \| | \ \  | |   "
 echo -e             "  \_____|_|  |_|______|_|  \_\_|  \_\ |_|   ${White}\n"
 
-echo -e "${LightBlue}Cherry Script $main_version(Support for Ubuntu/Debian)${White}"
+echo -e "${LightBlue}Cherry Script $main_version (Support for Ubuntu/Debian)${White}"
 echo -e "${LightBlue}Personal use, unauthorized use prohibited!${White}"
 echo -e "${LightBlue}------- Press ${DarkYellow}ludo${LightBlue} to start script -------${White}"
 echo "------------------------"
@@ -32,7 +32,6 @@ echo "11. 安装Hysteria2 "
 echo "12. 安装SingBox脚本 ▶ "
 echo "13. 系统工具 ▶ "
 echo "14. 面板工具 ▶ "
-echo "15. 安装3X-UI "
 echo "------------------------"
 if [[ ${startup_check_new_version} == "true" ]]; then
     echo -e "99. 脚本更新 ${Red}* ${White}"
@@ -2777,7 +2776,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
       echo "▶ 面板工具"
       echo "------------------------"
       echo "1. 宝塔面板官方版                       2. aaPanel宝塔国际版"
-      echo "3. 1Panel新一代管理面板                 4. NginxProxyManager可视化面板"
+      echo "3. 1Panel新一代管理面板                 4. 3X-UI代理面板"
       echo "5. AList多存储文件列表程序              6. Ubuntu远程桌面网页版"
       echo "7. 哪吒探针VPS监控面板                  8. QB离线BT磁力下载面板"
       echo "9. Poste.io邮件服务器程序               10. RocketChat多人在线聊天系统"
@@ -2794,7 +2793,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
       echo "31. StirlingPDF工具大全                 32. drawio免费的在线图表软件"
       echo "33. Sun-Panel导航面板                   34. Pingvin-Share文件分享平台"
       echo "35. 极简朋友圈                          36. LobeChatAI聊天聚合网站"
-      echo "37. MyIP工具箱"
+      echo "37. MyIP工具箱                          4. NginxProxyManager可视化面板""
       echo "------------------------"
       echo "51. PVE开小鸡面板"
       echo "------------------------"
@@ -2874,27 +2873,16 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
 
               ;;
           4)
-
-            docker_name="npm"
-            docker_img="jc21/nginx-proxy-manager:latest"
-            docker_port=81
-            docker_rum="docker run -d \
-                          --name=$docker_name \
-                          -p 80:80 \
-                          -p 81:$docker_port \
-                          -p 443:443 \
-                          -v /home/docker/npm/data:/data \
-                          -v /home/docker/npm/letsencrypt:/etc/letsencrypt \
-                          --restart=always \
-                          $docker_img"
-            docker_describe="如果您已经安装了其他面板工具或者LDNMP建站环境，建议先卸载，再安装npm！"
-            docker_url="官网介绍: https://nginxproxymanager.com/"
-            docker_use="echo \"初始用户名: admin@example.com\""
-            docker_passwd="echo \"初始密码: changeme\""
-
-            docker_app
-
-              ;;
+            #询问用户是否要安装3XUI
+            read -p "是否要安装3X-UI最新版？(y/n): " choice
+            if [ "$choice" == "y" ]; then
+                clear
+                install net-tools
+                bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+            else
+                back_main
+            fi
+            ;;
 
           5)
 
@@ -3792,6 +3780,27 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
             docker_passwd=""
             docker_app
               ;;
+           38)
+            docker_name="npm"
+            docker_img="jc21/nginx-proxy-manager:latest"
+            docker_port=81
+            docker_rum="docker run -d \
+                          --name=$docker_name \
+                          -p 80:80 \
+                          -p 81:$docker_port \
+                          -p 443:443 \
+                          -v /home/docker/npm/data:/data \
+                          -v /home/docker/npm/letsencrypt:/etc/letsencrypt \
+                          --restart=always \
+                          $docker_img"
+            docker_describe="如果您已经安装了其他面板工具或者LDNMP建站环境，建议先卸载，再安装npm！"
+            docker_url="官网介绍: https://nginxproxymanager.com/"
+            docker_use="echo \"初始用户名: admin@example.com\""
+            docker_passwd="echo \"初始密码: changeme\""
+
+            docker_app
+
+              ;;
 
 
           51)
@@ -3810,18 +3819,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
     done
     ;;
 
-  15)
-    clear
-    #询问用户是否要安装3XUI
-    read -p "是否要安装3X-UI最新版？(y/n): " choice
-    if [ "$choice" == "y" ]; then
-        clear
-        install net-tools
-        bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
-    else
-        back_main
-    fi
-    ;;
+
 
  99)
     Update_Shell
