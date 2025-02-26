@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.0.97 Build250226"
+main_version="V1.0.98 Build250226"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -2793,7 +2793,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
       echo "31. StirlingPDF工具大全                 32. drawio免费的在线图表软件"
       echo "33. Sun-Panel导航面板                   34. Pingvin-Share文件分享平台"
       echo "35. 极简朋友圈                          36. LobeChatAI聊天聚合网站"
-      echo "37. MyIP工具箱                          4. NginxProxyManager可视化面板""
+      echo "37. MyIP工具箱                          40. NginxProxyManager可视化面板"
       echo "------------------------"
       echo "51. PVE开小鸡面板"
       echo "------------------------"
@@ -2879,6 +2879,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
                 clear
                 install net-tools
                 bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+                exit 0
             else
                 back_main
             fi
