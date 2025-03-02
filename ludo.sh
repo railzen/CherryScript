@@ -34,7 +34,7 @@ echo "13. 系统工具 ▶ "
 echo "14. 面板工具 ▶ "
 echo "------------------------"
 if [[ ${startup_check_new_version} == "true" ]]; then
-    echo -e "99. 脚本更新 ${DarkYellow}* ${White}"
+    echo -e "99. 脚本更新 ${DarkYellow}● ${White}"
 else
     echo "99. 脚本更新"
 fi
