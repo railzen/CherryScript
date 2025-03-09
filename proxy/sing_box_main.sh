@@ -4564,12 +4564,11 @@ menu() {
         clear
         manageReality
         ;;
-    5)
+    4)
         clear
         coreVersionManageMenu
         ;;
-
-    6)
+    5)
         echo
         unInstall
         ;;
