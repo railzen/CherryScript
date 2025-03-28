@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.2 Build250302"
+main_version="V1.1.3 Build250328"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -2775,10 +2775,10 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
       clear
       echo "▶ 面板工具"
       echo "------------------------"
-      echo "1. 宝塔面板官方版                       2. aaPanel宝塔国际版"
-      echo "3. 1Panel新一代管理面板                 4. 3X-UI代理面板"
+      echo "1. 1Panel新一代管理面板                 2. aaPanel宝塔国际版"
+      echo "3. 宝塔面板官方版            	   4. 3X-UI代理面板"
       echo "5. AList多存储文件列表程序              6. Ubuntu远程桌面网页版"
-      echo "7. 哪吒探针VPS监控面板                  8. QB离线BT磁力下载面板"
+      echo "7. 哪吒探针V0主控面板                   8. QB离线BT磁力下载面板"
       echo "9. Poste.io邮件服务器程序               10. RocketChat多人在线聊天系统"
       echo "11. 禅道项目管理软件                    12. 青龙面板定时任务管理平台"
       echo "13. Cloudreve网盘                       14. 简单图床图片管理程序"
@@ -2793,7 +2793,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
       echo "31. StirlingPDF工具大全                 32. drawio免费的在线图表软件"
       echo "33. Sun-Panel导航面板                   34. Pingvin-Share文件分享平台"
       echo "35. 极简朋友圈                          36. LobeChatAI聊天聚合网站"
-      echo "37. MyIP工具箱                          40. NginxProxyManager可视化面板"
+      echo "37. MyIP工具箱                          38. NginxProxyManager可视化面板"
       echo "------------------------"
       echo "51. PVE开小鸡面板"
       echo "------------------------"
@@ -2803,29 +2803,25 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
 
       case $sub_choice in
           1)
+            lujing="command -v 1pctl &> /dev/null"
+            panelname="1Panel"
 
-            lujing="[ -d "/www/server/panel" ]"
-            panelname="宝塔面板"
+            gongneng1="1pctl user-info"
+            gongneng1_1="1pctl update password"
+            gongneng2="1pctl uninstall"
+            gongneng2_1=""
+            gongneng2_2=""
 
-            gongneng1="bt"
-            gongneng1_1=""
-            gongneng2="curl -o bt-uninstall.sh http://download.bt.cn/install/bt-uninstall.sh > /dev/null 2>&1 && chmod +x bt-uninstall.sh && ./bt-uninstall.sh"
-            gongneng2_1="chmod +x bt-uninstall.sh"
-            gongneng2_2="./bt-uninstall.sh"
-
-            panelurl="https://www.bt.cn/new/index.html"
+            panelurl="https://1panel.cn/"
 
 
-            centos_mingling="wget -O install.sh https://download.bt.cn/install/install_6.0.sh"
-            centos_mingling2="sh install.sh ed8484bec"
+            centos_mingling="curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh"
+            centos_mingling2="sh quick_start.sh"
 
-            ubuntu_mingling="wget -O install.sh https://download.bt.cn/install/install-ubuntu_6.0.sh"
-            ubuntu_mingling2="bash install.sh ed8484bec"
+            ubuntu_mingling="curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh"
+            ubuntu_mingling2="bash quick_start.sh"
 
             install_panel
-
-
-
               ;;
           2)
 
@@ -2851,26 +2847,26 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
               ;;
           3)
 
-            lujing="command -v 1pctl &> /dev/null"
-            panelname="1Panel"
 
-            gongneng1="1pctl user-info"
-            gongneng1_1="1pctl update password"
-            gongneng2="1pctl uninstall"
-            gongneng2_1=""
-            gongneng2_2=""
+            lujing="[ -d "/www/server/panel" ]"
+            panelname="宝塔面板"
 
-            panelurl="https://1panel.cn/"
+            gongneng1="bt"
+            gongneng1_1=""
+            gongneng2="curl -o bt-uninstall.sh http://download.bt.cn/install/bt-uninstall.sh > /dev/null 2>&1 && chmod +x bt-uninstall.sh && ./bt-uninstall.sh"
+            gongneng2_1="chmod +x bt-uninstall.sh"
+            gongneng2_2="./bt-uninstall.sh"
+
+            panelurl="https://www.bt.cn/new/index.html"
 
 
-            centos_mingling="curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh"
-            centos_mingling2="sh quick_start.sh"
+            centos_mingling="wget -O install.sh https://download.bt.cn/install/install_6.0.sh"
+            centos_mingling2="sh install.sh ed8484bec"
 
-            ubuntu_mingling="curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh"
-            ubuntu_mingling2="bash quick_start.sh"
+            ubuntu_mingling="wget -O install.sh https://download.bt.cn/install/install-ubuntu_6.0.sh"
+            ubuntu_mingling2="bash install.sh ed8484bec"
 
             install_panel
-
               ;;
           4)
             #询问用户是否要安装3XUI
@@ -2931,7 +2927,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
               ;;
           7)
             clear
-            curl -L https://raw.githubusercontent.com/naiba/nezha/master/script/install.sh  -o nezha.sh && chmod +x nezha.sh
+            curl -L https://raw.githubusercontent.com/nezhahq/scripts/refs/heads/v0/install.sh -o nezha.sh && chmod +x nezha.sh 
             ./nezha.sh
               ;;
 
