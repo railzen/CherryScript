@@ -2776,7 +2776,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
       echo "▶ 面板工具"
       echo "------------------------"
       echo "1. 1Panel新一代管理面板                 2. aaPanel宝塔国际版"
-      echo "3. 宝塔面板官方版            	   4. 3X-UI代理面板"
+      echo "3. 宝塔面板官方版                       4. 3X-UI代理面板"
       echo "5. AList多存储文件列表程序              6. Ubuntu远程桌面网页版"
       echo "7. 哪吒探针V0主控面板                   8. QB离线BT磁力下载面板"
       echo "9. Poste.io邮件服务器程序               10. RocketChat多人在线聊天系统"
