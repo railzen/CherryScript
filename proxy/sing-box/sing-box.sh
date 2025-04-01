@@ -157,7 +157,8 @@ download() {
         link=https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh
         mkdir -p /etc/sing-box
         mkdir -p /etc/sing-box/sh
-        cd /etc/sing-box/sh
+        mkdir -p /etc/sing-box/sh/src
+        cd /etc/sing-box/sh/src
         curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/bbr.sh"
         curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/caddy.sh"
         curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/core.sh"
@@ -258,7 +259,7 @@ main() {
     # check old version
     [[ -f $is_sh_bin && -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && {
         #err "检测到脚本已安装, 如需重装请使用${green} ${is_core} reinstall ${none}命令."
-        /etc/sing-box/sh/sing-box.sh
+        /etc/sing-box/sh/src/init.sh
         exit 0
         
     }
@@ -308,20 +309,6 @@ main() {
     # check background tasks status
     check_status
 
-    # test $is_core_file
-    if [[ $is_core_file ]]; then
-        mkdir -p $tmpdir/testzip
-        tar zxf $is_core_ok --strip-components 1 -C $tmpdir/testzip &>/dev/null
-        [[ $? != 0 ]] && {
-            msg err "${is_core_name} 文件无法通过测试."
-            exit_and_del_tmpdir
-        }
-        [[ ! -f $tmpdir/testzip/$is_core ]] && {
-            msg err "${is_core_name} 文件无法通过测试."
-            exit_and_del_tmpdir
-        }
-    fi
-
     # create sh dir...
     mkdir -p $is_sh_dir
 
@@ -368,7 +355,7 @@ main() {
 
 
    # remove tmp dir and exit.
-    /etc/sing-box/sh/sing-box.sh
+    /etc/sing-box/sh/src/init.sh
     
     exit_and_del_tmpdir ok
 }
