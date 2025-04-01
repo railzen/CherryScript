@@ -42,7 +42,7 @@ mainmenu=(
     "卸载"
     "帮助"
     "其他"
-    "关于"
+    "退出"
 )
 info_list=(
     "协议 (protocol)"
@@ -689,8 +689,6 @@ uninstall() {
     fi
     [[ $is_install_sh ]] && return # reinstall
     _green "\n卸载完成!"
-    msg "脚本哪里需要完善? 请反馈"
-    msg "反馈问题) $(msg_ul https://github.com/${is_sh_repo}/issues)\n"
 }
 
 # manage run status
@@ -1371,9 +1369,7 @@ info() {
         fi
         msg "$a $tt= \e[${is_color}m${is_info_str[$i]}\e[0m"
     done
-    if [[ $is_new_install ]]; then
-        warn "首次安装请查看脚本帮助文档: $(msg_ul https://233boy.com/$is_core/$is_core-script/)"
-    fi
+
     if [[ $is_url ]]; then
         msg "------------- ${info_list[12]} -------------"
         msg "\e[4;${is_color}m${is_url}\e[0m"
@@ -1385,7 +1381,6 @@ info() {
         msg "------------- no-auto-tls INFO -------------"
         msg "端口(port): $port"
         msg "路径(path): $path"
-        msg "\e[41m帮助(help)\e[0m: $(msg_ul https://233boy.com/$is_core/no-auto-tls/)"
     fi
     footer_msg
 }
@@ -1473,7 +1468,6 @@ update() {
     fi
     download $is_update_name $is_new_ver
     msg "更新成功, 当前 $is_show_name 版本: $(_green $is_new_ver)\n"
-    msg "$(_green 请查看更新说明: https://github.com/$is_update_repo/releases/tag/$is_new_ver)\n"
     [[ $is_update_name != 'sh' ]] && manage restart $is_update_name &
 }
 
@@ -1537,9 +1531,8 @@ is_main_menu() {
             ;;
         esac
         ;;
-    10)
-        load help.sh
-        about
+    0)
+        exit 0
         ;;
     esac
 }

@@ -159,16 +159,16 @@ download() {
         mkdir -p /etc/sing-box/sh
         mkdir -p /etc/sing-box/sh/src
         cd /etc/sing-box/sh/src
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/bbr.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/caddy.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/core.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/dns.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/download.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/help.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/import.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/init.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/systemd.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/bbr.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/caddy.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/core.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/dns.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/download.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/help.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/import.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/init.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/systemd.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh"
         chmod +x *.sh
         cp sing-box.sh ..
         cd -
@@ -259,6 +259,7 @@ main() {
     # check old version
     [[ -f $is_sh_bin && -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && {
         #err "检测到脚本已安装, 如需重装请使用${green} ${is_core} reinstall ${none}命令."
+        echo "Start Script"
         /etc/sing-box/sh/src/init.sh
         exit 0
         
@@ -312,13 +313,6 @@ main() {
     # create sh dir...
     mkdir -p $is_sh_dir
 
-    # copy sh file or unzip sh zip file.
-    if [[ $local_install ]]; then
-        cp -rf $PWD/* $is_sh_dir
-    else
-        tar zxf $is_sh_ok -C $is_sh_dir
-    fi
-
     # create core bin dir
     mkdir -p $is_core_dir/bin
     # copy core file or unzip core zip file
@@ -349,10 +343,26 @@ main() {
     # create systemd service
     load systemd.sh
     install_service $is_core &>/dev/null
+    
+    #create config.json
+    is_log='log:{output:"/var/log/'$is_core'/access.log",level:"info","timestamp":true}'
+    is_dns='dns:{}'
+    is_ntp='ntp:{"enabled":true,"server":"time.apple.com"},'
+    if [[ -f $is_config_json ]]; then
+        [[ $(jq .ntp.enabled $is_config_json) != "true" ]] && is_ntp=
+    else
+        [[ ! $is_ntp_on ]] && is_ntp=
+    fi
+    is_outbounds='outbounds:[{tag:"direct",type:"direct"},{tag:"block",type:"block"}]'
+    is_server_config_json=$(jq "{$is_log,$is_dns,$is_ntp$is_outbounds}" <<<{})
+    cat <<<$is_server_config_json >$is_config_json
+    manage restart &
+
 
     # create condf dir
     mkdir -p $is_conf_dir
-
+    clear
+    echo "Install Finish"
 
    # remove tmp dir and exit.
     /etc/sing-box/sh/src/init.sh

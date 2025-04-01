@@ -2,7 +2,6 @@
 
 author=233boy
 is_sh_ver=V1.0.6
-# github=https://github.com/233boy/sing-box
 
 # bash fonts colors
 red='\e[31m'
