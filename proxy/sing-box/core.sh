@@ -41,7 +41,6 @@ mainmenu=(
     "更新"
     "卸载"
     "帮助"
-    "其他"
     "退出"
 )
 info_list=(
@@ -242,11 +241,6 @@ ask() {
         is_tmp_list=("${is_all_json[@]}")
         is_opt_msg="\n请选择配置:\n"
         is_ask_set=is_config_file
-        ;;
-    mainmenu)
-        is_tmp_list=("${mainmenu[@]}")
-        is_ask_set=is_main_pick
-        is_emtpy_exit=1
         ;;
     esac
     msg $is_opt_msg
@@ -1476,7 +1470,18 @@ is_main_menu() {
     msg "\n------------- Sing-Box script $is_sh_ver  -------------"
     msg "$is_core_name $is_core_ver: $is_core_status"
     is_main_start=1
-    ask mainmenu
+    #ask mainmenu
+    clear
+    echo "1.添加配置"
+    echo "2.更改配置"
+    echo "3.查看配置"
+    echo "4.删除配置"
+    echo "5.运行管理"
+    echo "6.更新"
+    echo "7.卸载"
+    echo "8.帮助"
+    echo "0.退出"
+    read REPLY
     case $REPLY in
     1)
         add
@@ -1509,28 +1514,7 @@ is_main_menu() {
         load help.sh
         show_help
         ;;
-    9)
-        ask list is_do_other "启用BBR 查看日志 测试运行 重装脚本 设置DNS"
-        case $REPLY in
-        1)
-            load bbr.sh
-            _try_enable_bbr
-            ;;
-        2)
-            get log
-            ;;
-        3)
-            get test-run
-            ;;
-        4)
-            get reinstall
-            ;;
-        5)
-            load dns.sh
-            dns_set
-            ;;
-        esac
-        ;;
+
     0)
         exit 0
         ;;
