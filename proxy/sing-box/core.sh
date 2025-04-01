@@ -1471,7 +1471,6 @@ is_main_menu() {
     msg "$is_core_name $is_core_ver: $is_core_status"
     is_main_start=1
     #ask mainmenu
-    clear
     echo "1.添加配置"
     echo "2.更改配置"
     echo "3.查看配置"
@@ -1516,6 +1515,7 @@ is_main_menu() {
         ;;
 
     0)
+        clear
         exit 0
         ;;
     esac
