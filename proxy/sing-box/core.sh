@@ -170,7 +170,8 @@ is_test() {
         ;;
     port)
         if [[ $(is_test number $2) ]]; then
-            [[ $2 -le 65535 ]] && open_firewall_port $2 && echo ok
+            open_firewall_port $2 
+            [[ $2 -le 65535 ]] && echo ok
         fi
         ;;
     port_used)
