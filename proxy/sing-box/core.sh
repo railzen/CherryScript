@@ -1672,8 +1672,8 @@ update() {
 
 # main menu; if no prefer args.
 is_main_menu() {
-    msg "\n------------- Sing-Box script $is_sh_ver  -------------"
-    msg "$is_core_name $is_core_ver: $is_core_status"
+    msg "------------- Sing-Box script $is_sh_ver  -------------"
+    msg "Sing-Box $is_core_ver: $is_core_status"
     is_main_start=1
     #ask mainmenu
     echo "1.添加配置"
@@ -1685,7 +1685,7 @@ is_main_menu() {
     echo "7.卸载"
     echo "8.帮助"
     echo "0.退出"
-    read REPLY
+    read -p "请输入你的选择: " REPLY
     case $REPLY in
     1)
         add
