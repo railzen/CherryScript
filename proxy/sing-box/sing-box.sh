@@ -256,6 +256,7 @@ main() {
     [[ -f $is_sh_bin && -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && {
         #err "检测到脚本已安装, 如需重装请使用${green} ${is_core} reinstall ${none}命令."
         echo "Start Script"
+        clear
         /etc/sing-box/sh/src/init.sh
         exit 0
         

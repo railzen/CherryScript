@@ -155,6 +155,14 @@ show_list() {
 
 }
 
+open_firewall_port() {
+    ufw allow $1 > /dev/null 2>&1
+    sudo firewall-cmd --permanent --add-port=$1 > /dev/null 2>&1
+    sed -i "/COMMIT/i -A INPUT -p tcp --dport $1 -j ACCEPT" /etc/iptables/rules.v4 > /dev/null 2>&1
+    sed -i "/COMMIT/i -A INPUT -p udp --dport $1 -j ACCEPT" /etc/iptables/rules.v4 > /dev/null 2>&1
+    iptables-restore < /etc/iptables/rules.v4 > /dev/null 2>&1
+}
+
 is_test() {
     case $1 in
     number)
@@ -162,7 +170,7 @@ is_test() {
         ;;
     port)
         if [[ $(is_test number $2) ]]; then
-            [[ $2 -le 65535 ]] && echo ok
+            [[ $2 -le 65535 ]] && open_firewall_port $2 && echo ok
         fi
         ;;
     port_used)
