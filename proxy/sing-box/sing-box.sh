@@ -159,16 +159,16 @@ download() {
         mkdir -p /etc/sing-box/sh
         mkdir -p /etc/sing-box/sh/src
         cd /etc/sing-box/sh/src
-        curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/bbr.sh"
-        curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/caddy.sh"
-        curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/core.sh"
-        curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/dns.sh"
-        curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/download.sh"
-        curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/help.sh"
-        curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/import.sh"
-        curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/init.sh"
-        curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/systemd.sh"
-        curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/bbr.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/caddy.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/core.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/dns.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/download.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/help.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/import.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/init.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/systemd.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box.sh"
         chmod +x *.sh
         cp sing-box.sh ..
         cd -
