@@ -159,13 +159,9 @@ download() {
         mkdir -p /etc/sing-box/sh
         mkdir -p /etc/sing-box/sh/src
         cd /etc/sing-box/sh/src
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/bbr.sh"
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/caddy.sh"
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/core.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/dns.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/download.sh"
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/help.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/import.sh"
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/init.sh"
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/systemd.sh"
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh"
