@@ -1439,7 +1439,7 @@ info() {
 
     if [[ $is_url ]]; then
         msg "------------- ${info_list[12]} -------------"
-        msg "\e[4;${is_color}m${is_url}\e[0m"
+        msg "\033[0;32m${is_url}\033[0m"
         echo $is_url >> ~/Proxy.txt 
         [[ $is_insecure ]] && {
             warn "某些客户端如(V2rayN 等)导入URL需手动将: 跳过证书验证(allowInsecure) 设置为 true, 或打开: 允许不安全的连接"
@@ -1674,6 +1674,7 @@ update() {
 is_main_menu() {
     msg "------------- Sing-Box script $is_sh_ver  -------------"
     msg "Sing-Box $is_core_ver: $is_core_status"
+    msg "-------------------------------------------------------"
     is_main_start=1
     #ask mainmenu
     echo "1.添加配置"
@@ -1684,7 +1685,9 @@ is_main_menu() {
     echo "6.更新"
     echo "7.卸载"
     echo "8.帮助"
+    msg "-------------------------------------------------------"
     echo "0.退出"
+    msg "-------------------------------------------------------"
     read -p "请输入你的选择: " REPLY
     case $REPLY in
     1)
