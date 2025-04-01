@@ -874,6 +874,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
       echo "----综合性测试-----------"
       echo "31. bench性能测试"
       echo "32. spiritysdx融合怪测评"
+      echo "33. NodeQuality测评脚本"
       echo ""
       echo "------------------------"
       echo "0. 返回主菜单"
@@ -973,6 +974,10 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
           32)
               clear
               curl -L https://gitlab.com/spiritysdx/za/-/raw/main/ecs.sh -o ecs.sh && chmod +x ecs.sh && bash ecs.sh
+              ;;
+          33)
+              clear
+              bash <(curl -sL https://run.NodeQuality.com)
               ;;
           0)
               back_main
