@@ -64,7 +64,22 @@ apt -y install net-tools
 #变量初始化，这里ip使用ifconfig只是因为我想顺手装上
 #ipv4=`ifconfig | grep 'inet[^6]' | awk '{print $2}' | cut -d/ -f1 | grep -v "127.0.0.1"`
 ip_address
-port=$(rand 10000 59999) 
+
+echo -e "本步骤会对系统防火墙(ufw/firewalld)进行端口放行操作，请注意安全性！"
+echo -e "请输入Hysteria2 Server 端口[1-65535]:"
+read -e -p "(默认随机):" port
+[[ -z "${port}" ]] && port=$(rand 10000 59999) 
+if [[ ${port} -ge 1 ]] && [[ ${port} -le 65535 ]]; then
+    echo && echo "=============================="
+    echo -e "端口 : ${port} "
+    echo "==============================" && echo
+    break
+else
+    port=$(rand 10000 59999) 
+    echo -e "输入错误, 使用随机端口${port}"
+fi
+
+#port=$(rand 10000 59999) 
 uuid=$(cat /dev/urandom | od -x | head -1 | awk '{print $2$3"-"$4"-"$5"-"$6"-"$7$8$9}')
 
 #下载官方安装
