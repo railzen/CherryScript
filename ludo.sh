@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.3 Build250328"
+main_version="V1.1.4 Build250402"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -27,11 +27,13 @@ echo "6. Docker管理 ▶ "
 echo "7. WARP管理 ▶ "
 echo "8. 测试脚本合集 ▶ "
 echo "9. 甲骨文云脚本合集 ▶ "
-echo "10. 安装Snell V4 "
-echo "11. 安装Hysteria2 "
-echo "12. 安装SingBox脚本 ▶ "
-echo "13. 系统工具 ▶ "
-echo "14. 面板工具 ▶ "
+echo "10. 系统工具 ▶ "
+echo "11. 面板工具 ▶ "
+echo "12. 安装Snell V4 "
+echo "13. 安装Hysteria2 "
+echo "14. 安装SingBox脚本 ▶ "
+echo "15. 安装新版SingBox脚本 ▶ "
+
 echo "------------------------"
 if [[ ${startup_check_new_version} == "true" ]]; then
     echo -e "99. 脚本更新 ${DarkYellow}● ${White}"
@@ -1114,27 +1116,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
     done
     ;;
 
-
   10)
-    #询问用户是否要安装Snell
-        #read -p "是否要进入Snell V4安装脚本？(y/n): " choice
-        #choice=y
-        #if [ "$choice" == "y" ]; then
-    clear
-    bash -c "$(curl -sL https://raw.githubusercontent.com/railzen/CherryScript/main/snell/snell.sh)"
-    ;;
-
-  11)
-    clear
-    curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/setup_hysteria.sh && chmod +x setup_hysteria.sh && ./setup_hysteria.sh
-    ;;
-
-  12)
-    clear
-    curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box_main.sh && chmod +x sing_box_main.sh && ./sing_box_main.sh
-    ;;
-
-  13)
     while true; do
       clear
       echo "▶ 系统工具"
@@ -2770,7 +2752,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
     done
     ;;
 
-  14)
+  11)
     while true; do
       clear
       echo "▶ 面板工具"
@@ -3815,8 +3797,29 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
 
     done
     ;;
+  12)
+    #询问用户是否要安装Snell
+        #read -p "是否要进入Snell V4安装脚本？(y/n): " choice
+        #choice=y
+        #if [ "$choice" == "y" ]; then
+    clear
+    bash -c "$(curl -sL https://raw.githubusercontent.com/railzen/CherryScript/main/snell/snell.sh)"
+    ;;
 
+  13)
+    clear
+    curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/setup_hysteria.sh && chmod +x setup_hysteria.sh && ./setup_hysteria.sh
+    ;;
 
+  14)
+    clear
+    curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box_main.sh && chmod +x sing_box_main.sh && ./sing_box_main.sh
+    ;;
+
+  15)
+    clear
+    curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh && chmod +x sing-box.sh && ./sing-box.sh
+    ;;
 
  99)
     Update_Shell
