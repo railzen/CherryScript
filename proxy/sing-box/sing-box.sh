@@ -159,9 +159,7 @@ download() {
         mkdir -p /etc/sing-box/sh
         mkdir -p /etc/sing-box/sh/src
         cd /etc/sing-box/sh/src
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/caddy.sh"
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/core.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/help.sh"
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/init.sh"
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/systemd.sh"
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh"
@@ -255,6 +253,11 @@ main() {
     # check old version
     [[ -f $is_sh_bin && -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && {
         #err "检测到脚本已安装, 如需重装请使用${green} ${is_core} reinstall ${none}命令."
+        cd /etc/sing-box/sh/src
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/core.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/init.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/systemd.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh"
         echo "Start Script"
         clear
         /etc/sing-box/sh/src/init.sh
