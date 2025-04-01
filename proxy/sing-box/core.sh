@@ -1538,10 +1538,6 @@ main() {
             $is_core_bin $is_run_command ${@:2}
         fi
         ;;
-    bbr)
-        load bbr.sh
-        _try_enable_bbr
-        ;;
     c | config | change)
         change ${@:2}
         ;;
@@ -1584,10 +1580,6 @@ main() {
         is_dont_auto_exit=
         manage restart &
         [[ $is_del_host ]] && manage restart caddy &
-        ;;
-    dns)
-        load dns.sh
-        dns_set ${@:2}
         ;;
     debug)
         is_debug=1
