@@ -323,12 +323,12 @@ main() {
     fi
 
     # add alias
-    echo "alias sb=$is_sh_bin" >>/root/.bashrc
-    echo "alias $is_core=$is_sh_bin" >>/root/.bashrc
+    #echo "alias sb=$is_sh_bin" >>/root/.bashrc
+    #echo "alias $is_core=$is_sh_bin" >>/root/.bashrc
 
     # core command
-    ln -sf $is_sh_dir/$is_core.sh $is_sh_bin
-    ln -sf $is_sh_dir/$is_core.sh ${is_sh_bin/$is_core/sb}
+    #ln -sf $is_sh_dir/$is_core.sh $is_sh_bin
+    #ln -sf $is_sh_dir/$is_core.sh ${is_sh_bin/$is_core/sb}
 
     # jq
     [[ $jq_not_found ]] && mv -f $is_jq_ok /usr/bin/jq

@@ -32,7 +32,7 @@ echo "11. 面板工具 ▶ "
 echo "12. 安装Snell V4 "
 echo "13. 安装Hysteria2 "
 echo "14. 安装SingBox脚本 ▶ "
-echo "15. 安装新版SingBox脚本 ▶ "
+echo "15. 新版SingBox脚本 ▶ "
 
 echo "------------------------"
 if [[ ${startup_check_new_version} == "true" ]]; then
