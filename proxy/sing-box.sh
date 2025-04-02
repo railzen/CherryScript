@@ -1999,19 +1999,11 @@ chenk_install() {
         tar zxf $is_core_ok --strip-components 1 -C $is_core_dir/bin
     fi
 
-    # add alias
-    #echo "alias sb=$is_sh_bin" >>/root/.bashrc
-    #echo "alias $is_core=$is_sh_bin" >>/root/.bashrc
-
-    # core command
-    #ln -sf $is_sh_dir/$is_core.sh $is_sh_bin
-    #ln -sf $is_sh_dir/$is_core.sh ${is_sh_bin/$is_core/sb}
-
     # jq
     [[ $jq_not_found ]] && mv -f $is_jq_ok /usr/bin/jq
 
     # chmod
-    chmod +x $is_core_bin $is_sh_bin /usr/bin/jq ${is_sh_bin/$is_core/sb}
+    chmod +x $is_core_bin /usr/bin/jq
 
     # create log dir
     mkdir -p $is_log_dir
