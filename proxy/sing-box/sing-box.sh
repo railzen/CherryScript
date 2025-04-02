@@ -861,7 +861,12 @@ manage() {
         fi
     }
 }
-
+function rand() { 
+ min=$1 
+ max=$(($2-$min+1)) 
+ num=$(($RANDOM+$RANDOM+$RANDOM+1000000000)) #增加一个10位的数再求余 
+ echo $(($num%$max+$min)) 
+}  
 # add a config
 add() {
     is_lower=${1,,}
@@ -1068,7 +1073,23 @@ add() {
         if [[ $is_main_start ]]; then
 
             # set port
-            [[ ! $port ]] && ask string port "请输入端口:"
+            #[[ ! $port ]] && ask string port "请输入端口:"
+            if [[ ! $port ]]; then
+                echo -e "本步骤会对系统防火墙(ufw/firewalld)进行端口放行操作，请注意安全性！"
+                echo -e "请输入端口[1-65535]:"
+                read -e -p "(默认随机):" port
+                [[ -z "${port}" ]] && port=$(rand 10000 59999) 
+                if [[ ${port} -ge 1 ]] && [[ ${port} -le 65535 ]]; then
+                    echo && echo "=============================="
+                    echo -e "端口 : ${port} "
+                    echo "==============================" && echo
+                    break
+                else
+                    port=$(rand 10000 59999) 
+                    echo -e "输入错误, 使用随机端口${port}"
+                fi
+                open_firewall_port $port
+            fi
 
             case ${is_new_protocol,,} in
             socks)
