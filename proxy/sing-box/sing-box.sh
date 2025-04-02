@@ -2047,13 +2047,9 @@ download() {
         link=https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh
         mkdir -p /etc/sing-box
         mkdir -p /etc/sing-box/sh
-        mkdir -p /etc/sing-box/sh/src
-        cd /etc/sing-box/sh/src
-        #curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/core.sh"
-        #curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/init.sh"
+        cd /etc/sing-box/sh
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh"
         chmod +x *.sh
-        cp sing-box.sh ..
         cd -
         name="$is_core_name 脚本"
         tmpfile=$tmpsh
