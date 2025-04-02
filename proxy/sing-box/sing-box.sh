@@ -2,7 +2,7 @@
 #install_service
 
 author=railzen
-is_sh_ver=V1.0.8
+is_sh_ver=V1.0.9
 
 # bash fonts colors
 red='\e[31m'
@@ -2051,23 +2051,6 @@ done
 _wget() {
     [[ $proxy ]] && export https_proxy=$proxy
     wget --no-check-certificate $*
-}
-
-# print a mesage
-msg() {
-    case $1 in
-    warn)
-        local color=$yellow
-        ;;
-    err)
-        local color=$red
-        ;;
-    ok)
-        local color=$green
-        ;;
-    esac
-
-    echo -e "${color}$(date +'%T')${none}) ${2}"
 }
 
 
