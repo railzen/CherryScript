@@ -2,7 +2,7 @@
 #install_service
 
 author=railzen
-is_sh_ver=V0.0.12
+is_sh_ver=V0.0.13
 
 # bash fonts colors
 red='\e[31m'
@@ -691,7 +691,7 @@ get_latest_version() {
         name="$is_core_name 脚本"
         url="https://api.github.com/repos/$is_sh_repo/releases/latest?v=$RANDOM"
         cd /etc/sing-box/sh
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box.sh"
         echo "已更新到最新版本"
         return 0
         ;;
@@ -2073,7 +2073,7 @@ download() {
         mkdir -p /etc/sing-box
         mkdir -p /etc/sing-box/sh
         cd /etc/sing-box/sh
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box.sh"
         chmod +x *.sh
         cd -
         name="$is_core_name 脚本"
@@ -2209,7 +2209,7 @@ chenk_install() {
     [[ -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && {
         #err "检测到脚本已安装, 如需重装请使用${green} ${is_core} reinstall ${none}命令."
         cd /etc/sing-box/sh
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh"
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box.sh"
         echo "Start Script"
         clear
         start_script

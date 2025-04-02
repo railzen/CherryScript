@@ -3,7 +3,7 @@
 # -------------------------------------------------------------
 # 检查系统
 export LANG=en_US.UTF-8
-sh_ver="V1.0.5 build240803"
+sh_ver="V1.0.6 build250303"
 echoType='echo -e'
  
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m" && Yellow_font_prefix="\033[0;33m"
