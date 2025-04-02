@@ -1,6 +1,7 @@
 #!/bin/bash
 
 author=railzen
+is_sh_ver=V1.0.7
 
 # bash fonts colors
 red='\e[31m'
@@ -68,8 +69,17 @@ is_log_dir=/var/log/$is_core
 is_sh_bin=/usr/local/bin/$is_core
 is_sh_dir=$is_core_dir/sh
 is_sh_repo=$author/CherryScript/main/proxy/sing_box
-is_pkg="wget tar"
+is_pkg="wget unzip tar qrencode"
 is_config_json=$is_core_dir/config.json
+is_caddy_bin=/usr/local/bin/caddy
+is_caddy_dir=/etc/caddy
+is_caddy_repo=caddyserver/caddy
+is_caddyfile=$is_caddy_dir/Caddyfile
+is_caddy_conf=$is_caddy_dir/$author
+is_caddy_service=$(systemctl list-units --full -all | grep caddy.service)
+is_http_port=80
+is_https_port=443
+
 tmp_var_lists=(
     tmpcore
     tmpsh
@@ -220,7 +230,7 @@ download() {
         mkdir -p /etc/sing-box/sh/src
         cd /etc/sing-box/sh/src
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/core.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/init.sh"
+        #curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/init.sh"
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh"
         chmod +x *.sh
         cp sing-box.sh ..
@@ -306,19 +316,65 @@ exit_and_del_tmpdir() {
     exit
 }
 
+start_script() {
+# core ver
+is_core_ver=$($is_core_bin version | head -n1 | cut -d " " -f3)
+
+# tmp tls key
+is_tls_cer=$is_core_dir/bin/tls.cer
+is_tls_key=$is_core_dir/bin/tls.key
+[[ ! -f $is_tls_cer || ! -f $is_tls_key ]] && {
+    is_tls_tmp=${is_tls_key/key/tmp}
+    $is_core_bin generate tls-keypair tls -m 456 >$is_tls_tmp
+    awk '/BEGIN PRIVATE KEY/,/END PRIVATE KEY/' $is_tls_tmp >$is_tls_key
+    awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/' $is_tls_tmp >$is_tls_cer
+    rm $is_tls_tmp
+}
+
+if [[ $(pgrep -f $is_core_bin) ]]; then
+    is_core_status=$(_green running)
+else
+    is_core_status=$(_red_bg stopped)
+    is_core_stop=1
+fi
+if [[ -f $is_caddy_bin && -d $is_caddy_dir && $is_caddy_service ]]; then
+    is_caddy=1
+    # fix caddy run; ver >= 2.8.2
+    [[ ! $(grep '\-\-adapter caddyfile' /lib/systemd/system/caddy.service) ]] && {
+        install_service caddy
+        systemctl restart caddy &
+    }
+    is_caddy_ver=$($is_caddy_bin version | head -n1 | cut -d " " -f1)
+    is_tmp_http_port=$(egrep '^ {2,}http_port|^http_port' $is_caddyfile | egrep -o [0-9]+)
+    is_tmp_https_port=$(egrep '^ {2,}https_port|^https_port' $is_caddyfile | egrep -o [0-9]+)
+    [[ $is_tmp_http_port ]] && is_http_port=$is_tmp_http_port
+    [[ $is_tmp_https_port ]] && is_https_port=$is_tmp_https_port
+    if [[ $(pgrep -f $is_caddy_bin) ]]; then
+        is_caddy_status=$(_green running)
+    else
+        is_caddy_status=$(_red_bg stopped)
+        is_caddy_stop=1
+    fi
+fi
+
+load core.sh
+[[ ! $args ]] && args=main
+main $args
+}
+
 # main
-main() {
+chenk_install() {
 
     # check old version
     [[ -f $is_sh_bin && -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && {
         #err "检测到脚本已安装, 如需重装请使用${green} ${is_core} reinstall ${none}命令."
         cd /etc/sing-box/sh/src
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/core.sh"
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/init.sh"
+        #curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/init.sh"
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh"
         echo "Start Script"
         clear
-        /etc/sing-box/sh/src/init.sh
+        start_script
         exit 0
         
     }
@@ -422,10 +478,10 @@ main() {
     echo "Install Finish"
 
    # remove tmp dir and exit.
-    /etc/sing-box/sh/src/init.sh
+    start_script
     
     exit_and_del_tmpdir ok
 }
 
 # start.
-main $@
+chenk_install $@
