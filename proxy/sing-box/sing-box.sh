@@ -2,7 +2,7 @@
 #install_service
 
 author=railzen
-is_sh_ver=V0.0.11
+is_sh_ver=V0.0.12
 
 # bash fonts colors
 red='\e[31m'
@@ -690,6 +690,10 @@ get_latest_version() {
     sh)
         name="$is_core_name 脚本"
         url="https://api.github.com/repos/$is_sh_repo/releases/latest?v=$RANDOM"
+        cd /etc/sing-box/sh
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh"
+        echo "已更新到最新版本"
+        return 0
         ;;
     caddy)
         name="Caddy"
