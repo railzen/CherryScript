@@ -2,7 +2,7 @@
 #install_service
 
 author=railzen
-is_sh_ver=V0.0.15
+is_sh_ver=V0.0.16
 
 # bash fonts colors
 red='\e[31m'
@@ -44,6 +44,27 @@ is_caddy_conf=$is_caddy_dir/$author
 is_caddy_service=$(systemctl list-units --full -all | grep caddy.service)
 is_http_port=80
 is_https_port=443
+
+tmp_var_lists=(
+    tmpcore
+    tmpsh
+    tmpjq
+    is_core_ok
+    is_sh_ok
+    is_jq_ok
+    is_pkg_ok
+)
+
+# tmp dir
+tmpdir=$(mktemp -u)
+[[ ! $tmpdir ]] && {
+    tmpdir=/tmp/tmp-$RANDOM
+}
+
+# set up var
+for i in ${tmp_var_lists[*]}; do
+    export $i=$tmpdir/$i
+done
 
 is_err=$(_red_bg 错误!)
 is_warn=$(_red_bg 警告!)
@@ -242,7 +263,6 @@ is_test() {
         echo $2 | egrep -i '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
         ;;
     esac
-
 }
 
 is_port_used() {
@@ -706,6 +726,7 @@ get_latest_version() {
     }
     unset name url
 }
+
 download() {
     latest_ver=$2
     [[ ! $latest_ver ]] && get_latest_version $1
@@ -746,6 +767,7 @@ download() {
     rm -rf $tmpdir
     unset latest_ver
 }
+
 download_file() {
     if ! _wget -t 5 -c $link -O $tmpfile; then
         rm -rf $tmpdir
@@ -795,7 +817,7 @@ uninstall() {
         is_tmp_list=("卸载 $is_core_name" "卸载 ${is_core_name} & Caddy")
         ask list is_do_uninstall
     else
-        ask string y "是否卸载 ${is_core_name}? [y]:"
+        ask string y "是否卸载 ${is_core_name}? [N/y]:"
     fi
     manage stop &>/dev/null
     manage disable &>/dev/null
@@ -861,12 +883,14 @@ manage() {
         fi
     }
 }
-function rand() { 
+
+rand() { 
  min=$1 
  max=$(($2-$min+1)) 
  num=$(($RANDOM+$RANDOM+$RANDOM+1000000000)) #增加一个10位的数再求余 
  echo $(($num%$max+$min)) 
 }  
+
 # add a config
 add() {
     is_lower=${1,,}
@@ -1637,7 +1661,6 @@ reverse_proxy https://$proxy_site {
     esac
 }
 
-
 # update core, sh, caddy
 update() {
     case $1 in
@@ -1685,116 +1708,11 @@ update() {
     [[ $is_update_name != 'sh' ]] && manage restart $is_update_name &
 }
 
-# main menu; if no prefer args.
-is_main_menu() {
-    msg "------------- Sing-Box script $is_sh_ver  -------------"
-    msg "Sing-Box $is_core_ver: $is_core_status"
-    msg "-------------------------------------------------------"
-    #ask mainmenu
-    echo "1.添加配置"
-    echo "2.更改配置"
-    echo "3.查看配置"
-    echo "4.删除配置"
-    echo "5.运行管理"
-    echo "6.更新"
-    echo "7.卸载"
-    msg "-------------------------------------------------------"
-    echo "0.退出"
-    msg "-------------------------------------------------------"
-    read -p "请输入你的选择: " REPLY
-    case $REPLY in
-    1)
-        add
-        ;;
-    2)
-        change
-        ;;
-    3)
-        info
-        ;;
-    4)
-        del
-        ;;
-    5)
-        ask list is_do_manage "启动 停止 重启"
-        manage $REPLY &
-        msg "\n管理状态执行: $(_green $is_do_manage)\n"
-        ;;
-    6)
-        is_tmp_list=("更新$is_core_name" "更新脚本")
-        [[ $is_caddy ]] && is_tmp_list+=("更新Caddy")
-        ask list is_do_update null "\n请选择更新:\n"
-        update $REPLY
-        ;;
-    7)
-        uninstall
-        ;;
-
-    0)
-        clear
-        exit 0
-        ;;
-    esac
-}
-
-
-# root
-[[ $EUID != 0 ]] && err "当前非 ${yellow}ROOT用户.${none}"
-
-# yum or apt-get, ubuntu/debian/centos
-cmd=$(type -P apt-get || type -P yum)
-[[ ! $cmd ]] && err "此脚本仅支持 ${yellow}(Ubuntu or Debian or CentOS)${none}."
-
-# systemd
-[[ ! $(type -P systemctl) ]] && {
-    err "此系统缺少 ${yellow}(systemctl)${none}, 请尝试执行:${yellow} ${cmd} update -y;${cmd} install systemd -y ${none}来修复此错误."
-}
-
-
-
-# x64
-case $(uname -m) in
-amd64 | x86_64)
-    is_arch=amd64
-    ;;
-*aarch64* | *armv8*)
-    is_arch=arm64
-    ;;
-*)
-    err "此脚本仅支持 64 位系统..."
-    ;;
-esac
-
-
-
-tmp_var_lists=(
-    tmpcore
-    tmpsh
-    tmpjq
-    is_core_ok
-    is_sh_ok
-    is_jq_ok
-    is_pkg_ok
-)
-
-# tmp dir
-tmpdir=$(mktemp -u)
-[[ ! $tmpdir ]] && {
-    tmpdir=/tmp/tmp-$RANDOM
-}
-
-# set up var
-for i in ${tmp_var_lists[*]}; do
-    export $i=$tmpdir/$i
-done
-
-
 # wget add --no-check-certificate
 _wget() {
     [[ $proxy ]] && export https_proxy=$proxy
     wget --no-check-certificate $*
 }
-
 
 # install dependent pkg
 install_pkg() {
@@ -1904,7 +1822,6 @@ check_status() {
     }
 }
 
-
 # exit and remove tmpdir
 exit_and_del_tmpdir() {
     rm -rf $tmpdir
@@ -1915,6 +1832,57 @@ exit_and_del_tmpdir() {
         exit 1
     }
     exit
+}
+
+# main menu; if no prefer args.
+main_menu_show() {
+    msg "------------- Sing-Box script $is_sh_ver -----------------"
+    msg "Sing-Box $is_core_ver: $is_core_status"
+    msg "-------------------------------------------------------"
+    #ask mainmenu
+    echo "1.添加配置"
+    echo "2.更改配置"
+    echo "3.查看配置"
+    echo "4.删除配置"
+    echo "5.运行管理"
+    echo "6.更新"
+    echo "7.卸载"
+    msg "-------------------------------------------------------"
+    echo "0.退出"
+    msg "-------------------------------------------------------"
+    read -p "请输入你的选择: " REPLY
+    case $REPLY in
+    1)
+        add
+        ;;
+    2)
+        change
+        ;;
+    3)
+        info
+        ;;
+    4)
+        del
+        ;;
+    5)
+        ask list is_do_manage "启动 停止 重启"
+        manage $REPLY &
+        msg "\n管理状态执行: $(_green $is_do_manage)\n"
+        ;;
+    6)
+        is_tmp_list=("更新$is_core_name" "更新脚本")
+        [[ $is_caddy ]] && is_tmp_list+=("更新Caddy")
+        ask list is_do_update null "\n请选择更新:\n"
+        update $REPLY
+        ;;
+    7)
+        uninstall
+        ;;
+    0)
+        clear
+        exit 0
+        ;;
+    esac
 }
 
 start_script() {
@@ -1958,7 +1926,7 @@ if [[ -f $is_caddy_bin && -d $is_caddy_dir && $is_caddy_service ]]; then
     fi
 fi
 
-is_main_menu
+main_menu_show
 }
 
 # main
@@ -1969,11 +1937,9 @@ chenk_install() {
         #err "检测到脚本已安装, 如需重装请使用${green} ${is_core} reinstall ${none}命令."
         cd /etc/sing-box/sh
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box.sh"
-        echo "Start Script"
         clear
         start_script
         exit 0
-        
     }
 
     clear
@@ -2050,7 +2016,6 @@ chenk_install() {
     # create log dir
     mkdir -p $is_log_dir
 
-
     # create systemd service
     install_service $is_core &>/dev/null
     
@@ -2068,7 +2033,6 @@ chenk_install() {
     cat <<<$is_server_config_json >$is_config_json
     manage restart &
 
-
     # create condf dir
     mkdir -p $is_conf_dir
     clear
@@ -2081,4 +2045,31 @@ chenk_install() {
 }
 
 # start.
+# root check
+[[ $EUID != 0 ]] && err "当前非 ${yellow}ROOT用户.${none}"
+
+# yum or apt-get, ubuntu/debian/centos
+cmd=$(type -P apt-get || type -P yum)
+[[ ! $cmd ]] && err "此脚本仅支持 ${yellow}(Ubuntu or Debian or CentOS)${none}."
+
+# systemd
+[[ ! $(type -P systemctl) ]] && {
+    err "此系统缺少 ${yellow}(systemctl)${none}, 请尝试执行:${yellow} ${cmd} update -y;${cmd} install systemd -y ${none}来修复此错误."
+}
+
+
+# x64
+case $(uname -m) in
+amd64 | x86_64)
+    is_arch=amd64
+    ;;
+*aarch64* | *armv8*)
+    is_arch=arm64
+    ;;
+*)
+    err "此脚本仅支持 64 位系统..."
+    ;;
+esac
+
+
 chenk_install $@
