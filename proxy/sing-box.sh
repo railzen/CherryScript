@@ -2,7 +2,7 @@
 #install_service
 
 author=railzen
-is_sh_ver=V0.0.13
+is_sh_ver=V0.0.15
 
 # bash fonts colors
 red='\e[31m'
@@ -761,7 +761,7 @@ del() {
     # get a config file
     [[ ! $is_config_file ]] && get info $1
     if [[ $is_config_file ]]; then
-        if [[ $is_main_start && ! $is_no_del_msg ]]; then
+        if [[ ! $is_no_del_msg ]]; then
             msg "\n是否删除配置文件?: $is_config_file"
             pause
         fi
@@ -1069,44 +1069,39 @@ add() {
         # test host dns
         get host-test
     else
-        # for main menu start, dont auto create args
-        if [[ $is_main_start ]]; then
-
-            # set port
-            #[[ ! $port ]] && ask string port "请输入端口:"
-            if [[ ! $port ]]; then
-                echo -e "本步骤会对系统防火墙(ufw/firewalld)进行端口放行操作，请注意安全性！"
-                echo -e "请输入端口[1-65535]:"
-                read -e -p "(默认随机):" port
-                [[ -z "${port}" ]] && port=$(rand 10000 59999) 
-                if [[ ${port} -ge 1 ]] && [[ ${port} -le 65535 ]]; then
-                    echo && echo "=============================="
-                    echo -e "端口 : ${port} "
-                    echo "==============================" && echo
-                    break
-                else
-                    port=$(rand 10000 59999) 
-                    echo -e "输入错误, 使用随机端口${port}"
-                fi
-                open_firewall_port $port
+        # set port
+        #[[ ! $port ]] && ask string port "请输入端口:"
+        if [[ ! $port ]]; then
+            echo -e "本步骤会对系统防火墙(ufw/firewalld)进行端口放行操作，请注意安全性！"
+            echo -e "请输入端口[1-65535]:"
+            read -e -p "(默认随机):" port
+            [[ -z "${port}" ]] && port=$(rand 10000 59999) 
+            if [[ ${port} -ge 1 ]] && [[ ${port} -le 65535 ]]; then
+                echo && echo "=============================="
+                echo -e "端口 : ${port} "
+                echo "==============================" && echo
+                break
+            else
+                port=$(rand 10000 59999) 
+                echo -e "输入错误, 使用随机端口${port}"
             fi
-
-            case ${is_new_protocol,,} in
-            socks)
-                # set user
-                [[ ! $is_socks_user ]] && ask string is_socks_user "请设置用户名:"
-                # set password
-                [[ ! $is_socks_pass ]] && ask string is_socks_pass "请设置密码:"
-                ;;
-            shadowsocks)
-                # set method
-                [[ ! $ss_method ]] && ask set_ss_method
-                # set password
-                [[ ! $ss_password ]] && ask string ss_password "请设置密码:"
-                ;;
-            esac
-
+            open_firewall_port $port
         fi
+
+        case ${is_new_protocol,,} in
+        socks)
+            # set user
+            [[ ! $is_socks_user ]] && ask string is_socks_user "请设置用户名:"
+            # set password
+            [[ ! $is_socks_pass ]] && ask string is_socks_pass "请设置密码:"
+            ;;
+        shadowsocks)
+            # set method
+            [[ ! $ss_method ]] && ask set_ss_method
+            # set password
+            [[ ! $ss_password ]] && ask string ss_password "请设置密码:"
+            ;;
+        esac
     fi
 
     # Dokodemo-Door
@@ -1642,83 +1637,6 @@ reverse_proxy https://$proxy_site {
     esac
 }
 
-show_help() {
-    case $1 in
-    api | x25519 | tls | run | uuid | version)
-        $is_core_bin help $1 ${@:2}
-        ;;
-    *)
-        [[ $1 ]] && warn "未知选项 '$1'"
-        msg "$is_core_name script $is_sh_ver by $author"
-        msg "Usage: $is_core [options]... [args]... "
-        msg
-        help_info=(
-            "基本:"
-            "   v, version                                      显示当前版本"
-            "   ip                                              返回当前主机的 IP"
-            "   pbk                                             同等于 $is_core generate reality-keypair"
-            "   get-port                                        返回一个可用的端口"
-            "   ss2022                                          返回一个可用于 Shadowsocks 2022 的密码\n"
-            "一般:"
-            "   a, add [protocol] [args... | auto]              添加配置"
-            "   c, change [name] [option] [args... | auto]      更改配置"
-            "   d, del [name]                                   删除配置**"
-            "   i, info [name]                                  查看配置"
-            "   qr [name]                                       二维码信息"
-            "   url [name]                                      URL 信息"
-            "   log                                             查看日志"
-            # "   logerr                                          查看错误日志\n"
-            "更改:"
-            # "   dp, dynamicport [name] [start | auto] [end]     更改动态端口"
-            "   full [name] [...]                               更改多个参数"
-            "   id [name] [uuid | auto]                         更改 UUID"
-            "   host [name] [domain]                            更改域名"
-            "   port [name] [port | auto]                       更改端口"
-            "   path [name] [path | auto]                       更改路径"
-            "   passwd [name] [password | auto]                 更改密码"
-            "   key [name] [Private key | atuo] [Public key]    更改密钥"
-            # "   type [name] [type | auto]                       更改伪装类型"
-            "   method [name] [method | auto]                   更改加密方式"
-            "   sni [name] [ ip | domain]                       更改 serverName"
-            # "   seed [name] [seed | auto]                       更改 mKCP seed"
-            "   new [name] [...]                                更改协议"
-            "   web [name] [domain]                             更改伪装网站\n"
-            "进阶:"
-            "   dd, ddel [name...]                              删除多个配置**"
-            "   fix [name]                                      修复一个配置"
-            "   fix-all                                         修复全部配置"
-            "   fix-caddyfile                                   修复 Caddyfile"
-            "   fix-config.json                                 修复 config.json"
-            "   import                                          导入 xray/v2ray 脚本配置\n"
-            "管理:"
-            "   un, uninstall                                   卸载"
-            "   u, update [core | sh | caddy] [ver]             更新"
-            "   U, update.sh                                    更新脚本"
-            "   s, status                                       运行状态"
-            "   start, stop, restart [caddy]                    启动, 停止, 重启"
-            "   t, test                                         测试运行"
-            "   reinstall                                       重装脚本\n"
-            "测试:"
-            # "   client, genc [name]                             显示用于客户端 JSON, 仅供参考"
-            "   debug [name]                                    显示一些 debug 信息, 仅供参考"
-            "   gen [...]                                       同等于 add, 但只显示 JSON 内容, 不创建文件, 测试使用"
-            "   no-auto-tls [...]                               同等于 add, 但禁止自动配置 TLS, 可用于 *TLS 相关协议"
-            # "   xapi [...]                                      同等于 $is_core api, 但 API 后端使用当前运行的 $is_core_name 服务\n"
-            "其他:"
-            "   bin [...]                                       运行 $is_core_name 命令, 例如: $is_core bin help"
-            "   [...] [...]                                     兼容绝大多数的 $is_core_name 命令, 例如: $is_core_name generate uuid"
-            "   h, help                                         显示此帮助界面\n"
-        )
-        for v in "${help_info[@]}"; do
-            msg "$v"
-        done
-        msg "谨慎使用 del, ddel, 此选项会直接删除配置; 无需确认"
-
-        ;;
-
-    esac
-}
-
 
 # update core, sh, caddy
 update() {
@@ -1772,7 +1690,6 @@ is_main_menu() {
     msg "------------- Sing-Box script $is_sh_ver  -------------"
     msg "Sing-Box $is_core_ver: $is_core_status"
     msg "-------------------------------------------------------"
-    is_main_start=1
     #ask mainmenu
     echo "1.添加配置"
     echo "2.更改配置"
@@ -1781,7 +1698,6 @@ is_main_menu() {
     echo "5.运行管理"
     echo "6.更新"
     echo "7.卸载"
-    echo "8.帮助"
     msg "-------------------------------------------------------"
     echo "0.退出"
     msg "-------------------------------------------------------"
@@ -1813,10 +1729,6 @@ is_main_menu() {
     7)
         uninstall
         ;;
-    8)
-        msg
-        show_help
-        ;;
 
     0)
         clear
@@ -1824,157 +1736,6 @@ is_main_menu() {
         ;;
     esac
 }
-
-# check prefer args, if not exist prefer args and show main menu
-main() {
-    case $1 in
-    a | add | gen | no-auto-tls)
-        [[ $1 == 'gen' ]] && is_gen=1
-        [[ $1 == 'no-auto-tls' ]] && is_no_auto_tls=1
-        add ${@:2}
-        ;;
-    bin | pbk | check | completion | format | generate | geoip | geosite | merge | rule-set | run | tools)
-        is_run_command=$1
-        if [[ $1 == 'bin' ]]; then
-            $is_core_bin ${@:2}
-        else
-            [[ $is_run_command == 'pbk' ]] && is_run_command="generate reality-keypair"
-            $is_core_bin $is_run_command ${@:2}
-        fi
-        ;;
-    c | config | change)
-        change ${@:2}
-        ;;
-    # client | genc)
-    #     create client $2
-    #     ;;
-    d | del | rm)
-        del $2
-        ;;
-    dd | ddel | fix | fix-all)
-        case $1 in
-        fix)
-            [[ $2 ]] && {
-                change $2 full
-            } || {
-                is_change_id=full && change
-            }
-            return
-            ;;
-        fix-all)
-            is_dont_auto_exit=1
-            msg
-            for v in $(ls $is_conf_dir | grep .json$ | sed '/dynamic-port-.*-link/d'); do
-                msg "fix: $v"
-                change $v full
-            done
-            _green "\nfix 完成.\n"
-            ;;
-        *)
-            is_dont_auto_exit=1
-            [[ ! $2 ]] && {
-                err "无法找到需要删除的参数"
-            } || {
-                for v in ${@:2}; do
-                    del $v
-                done
-            }
-            ;;
-        esac
-        is_dont_auto_exit=
-        manage restart &
-        [[ $is_del_host ]] && manage restart caddy &
-        ;;
-    debug)
-        is_debug=1
-        get info $2
-        warn "如果需要复制; 请把 *uuid, *password, *host, *key 的值改写, 以避免泄露."
-        ;;
-    fix-config.json)
-        create config.json
-        ;;
-    fix-caddyfile)
-        if [[ $is_caddy ]]; then
-            caddy_config new
-            manage restart caddy &
-            _green "\nfix 完成.\n"
-        else
-            err "无法执行此操作"
-        fi
-        ;;
-    i | info)
-        info $2
-        ;;
-    ip)
-        get_ip
-        msg $ip
-        ;;
-    log)
-        get $@
-        ;;
-    un | uninstall)
-        uninstall
-        ;;
-    u | up | update | U | update.sh)
-        is_update_name=$2
-        is_update_ver=$3
-        [[ ! $is_update_name ]] && is_update_name=core
-        [[ $1 == 'U' || $1 == 'update.sh' ]] && {
-            is_update_name=sh
-            is_update_ver=
-        }
-        update $is_update_name $is_update_ver
-        ;;
-    ssss | ss2022)
-        get $@
-        ;;
-    s | status)
-        msg "\n$is_core_name $is_core_ver: $is_core_status\n"
-        [[ $is_caddy ]] && msg "Caddy $is_caddy_ver: $is_caddy_status\n"
-        ;;
-    start | stop | r | restart)
-        [[ $2 && $2 != 'caddy' ]] && err "无法识别 ($2), 请使用: $is_core $1 [caddy]"
-        manage $1 $2 &
-        ;;
-    t | test)
-        get test-run
-        ;;
-    reinstall)
-        get $1
-        ;;
-    get-port)
-        get_port
-        msg $tmp_port
-        ;;
-    main)
-        is_main_menu
-        ;;
-    v | ver | version)
-        [[ $is_caddy_ver ]] && is_caddy_ver="/ $(_blue Caddy $is_caddy_ver)"
-        msg "\n$(_green $is_core_name $is_core_ver) / $(_cyan $is_core_name script $is_sh_ver) $is_caddy_ver\n"
-        ;;
-    h | help | --help)
-        show_help ${@:2}
-        ;;
-    *)
-        is_try_change=1
-        change test $1
-        if [[ $is_change_id ]]; then
-            unset is_try_change
-            [[ $2 ]] && {
-                change $2 $1 ${@:3}
-            } || {
-                change
-            }
-        else
-            err "无法识别 ($1), 获取帮助请使用: $is_core help"
-        fi
-        ;;
-    esac
-}
-
-
-
 
 
 # root
@@ -2150,7 +1911,6 @@ exit_and_del_tmpdir() {
     [[ ! $1 ]] && {
         msg err "哦豁.."
         msg err "安装过程出现错误..."
-        echo -e "反馈问题) https://github.com/${is_sh_repo}/issues"
         echo
         exit 1
     }
@@ -2198,8 +1958,7 @@ if [[ -f $is_caddy_bin && -d $is_caddy_dir && $is_caddy_service ]]; then
     fi
 fi
 
-[[ ! $args ]] && args=main
-main $args
+is_main_menu
 }
 
 # main
