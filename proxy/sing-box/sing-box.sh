@@ -2,7 +2,7 @@
 #install_service
 
 author=railzen
-is_sh_ver=V1.0.9
+is_sh_ver=V1.0.10
 
 # bash fonts colors
 red='\e[31m'
@@ -2229,11 +2229,9 @@ main $args
 chenk_install() {
 
     # check old version
-    [[ -f $is_sh_bin && -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && {
+    [[ -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && {
         #err "检测到脚本已安装, 如需重装请使用${green} ${is_core} reinstall ${none}命令."
-        cd /etc/sing-box/sh/src
-        #curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/core.sh"
-        #curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/init.sh"
+        cd /etc/sing-box/sh
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing-box/sing-box.sh"
         echo "Start Script"
         clear
