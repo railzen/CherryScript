@@ -1,6 +1,4 @@
 #!/bin/bash
-#install_service
-
 author=railzen
 is_sh_ver=V0.0.16
 
@@ -34,7 +32,7 @@ is_log_dir=/var/log/$is_core
 is_sh_bin=/usr/local/bin/$is_core
 is_sh_dir=$is_core_dir/sh
 is_sh_repo=$author/CherryScript/main/proxy/sing_box
-is_pkg="wget unzip tar qrencode"
+is_pkg="wget tar"
 is_config_json=$is_core_dir/config.json
 is_caddy_bin=/usr/local/bin/caddy
 is_caddy_dir=/etc/caddy
