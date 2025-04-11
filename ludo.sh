@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.7 Build250402"
+main_version="V1.1.8 Build250411"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -32,7 +32,6 @@ echo "11. 面板工具 ▶ "
 echo "12. 安装Snell V4 "
 echo "13. 安装Hysteria2 "
 echo "14. 安装SingBox脚本 ▶ "
-echo "15. 新版SingBox脚本 ▶ "
 
 echo "------------------------"
 if [[ ${startup_check_new_version} == "true" ]]; then
@@ -3817,11 +3816,6 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
     ;;
 
   14)
-    clear
-    curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box_main.sh && chmod +x sing_box_main.sh && ./sing_box_main.sh
-    ;;
-
-  15)
     clear
     curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box.sh && chmod +x sing_box.sh && ./sing_box.sh
     ;;
