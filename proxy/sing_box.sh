@@ -1375,7 +1375,13 @@ get() {
             ;;
         *reality*)
             net=reality
-            [[ ! $is_servername ]] && is_servername=$is_random_servername
+            read -r -p "请输入目标域名，[回车]随机域名:" realityServerName
+            if [[ -z "${realityServerName}" ]]; then
+                [[ ! $is_servername ]] && is_servername=$is_random_servername
+            else
+                is_servername=$realityServerName
+            fi
+            
             [[ ! $is_private_key ]] && get_pbk
             is_json_add="tls:{enabled:true,server_name:\"$is_servername\",reality:{enabled:true,handshake:{server:\"$is_servername\",server_port:443},private_key:\"$is_private_key\",short_id:[\"\"]}}"
             [[ $is_lower =~ "http" ]] && {
