@@ -820,6 +820,14 @@ uninstall() {
     manage stop &>/dev/null
     manage disable &>/dev/null
     rm -rf $is_core_dir $is_log_dir $is_sh_bin ${is_sh_bin/$is_core/sb} /lib/systemd/system/$is_core.service
+
+    #卸载旧版脚本
+    systemctl stop sing-box.service
+    rc-service sing-box stop
+    rm -rf /etc/systemd/system/sing-box.service
+    rm -rf /opts/CherryScript/singbox_mux
+    #结束卸载旧版脚本
+
     sed -i "/alias $is_core=/d" /root/.bashrc
     # uninstall caddy; 2 is ask result
     if [[ $REPLY == '2' ]]; then
