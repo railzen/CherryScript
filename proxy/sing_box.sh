@@ -1,6 +1,6 @@
 #!/bin/bash
 author=railzen
-is_sh_ver=V0.0.17
+is_sh_ver=V0.0.18
 
 # bash fonts colors
 red='\e[31m'
@@ -1110,7 +1110,6 @@ add() {
                 echo && echo "=============================="
                 echo -e "端口 : ${port} "
                 echo "==============================" && echo
-                break
             else
                 port=$(rand 10000 59999) 
                 echo -e "输入错误, 使用随机端口${port}"
