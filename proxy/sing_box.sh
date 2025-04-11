@@ -1,6 +1,6 @@
 #!/bin/bash
 author=railzen
-is_sh_ver=V0.0.18
+is_sh_ver=V0.0.19
 
 # bash fonts colors
 red='\e[31m'
@@ -257,7 +257,7 @@ open_firewall_port() {
     sudo firewall-cmd --permanent --add-port=$1 > /dev/null 2>&1
     sed -i "/COMMIT/i -A INPUT -p tcp --dport $1 -j ACCEPT" /etc/iptables/rules.v4 > /dev/null 2>&1
     sed -i "/COMMIT/i -A INPUT -p udp --dport $1 -j ACCEPT" /etc/iptables/rules.v4 > /dev/null 2>&1
-    iptables-restore < /etc/iptables/rules.v4 > /dev/null 2>&1
+#    iptables-restore < /etc/iptables/rules.v4 > /dev/null 2>&1
 }
 
 is_test() {
@@ -1130,9 +1130,7 @@ add() {
             read -e -p "(默认随机):" port
             [[ -z "${port}" ]] && port=$(rand 10000 59999) 
             if [[ ${port} -ge 1 ]] && [[ ${port} -le 65535 ]]; then
-                echo && echo "=============================="
                 echo -e "端口 : ${port} "
-                echo "==============================" && echo
             else
                 port=$(rand 10000 59999) 
                 echo -e "输入错误, 使用随机端口${port}"
@@ -1403,7 +1401,7 @@ get() {
             else
                 is_servername=$realityServerName
             fi
-            
+            echo -e "域名 : ${realityServerName} "
             [[ ! $is_private_key ]] && get_pbk
             is_json_add="tls:{enabled:true,server_name:\"$is_servername\",reality:{enabled:true,handshake:{server:\"$is_servername\",server_port:443},private_key:\"$is_private_key\",short_id:[\"\"]}}"
             [[ $is_lower =~ "http" ]] && {
