@@ -157,12 +157,35 @@ change_list=(
     "更改用户名 (Username)"
 )
 servername_list=(
-    www.amazon.com
-    www.ebay.com
-    www.paypal.com
-    www.cloudflare.com
-    dash.cloudflare.com
-    aws.amazon.com
+    gateway.icloud.com
+    itunes.apple.com
+    swdist.apple.com
+    swcdn.apple.com
+    updates.cdn-apple.com
+    mensura.cdn-apple.com
+    osxapps.itunes.apple.com
+    aod.itunes.apple.com
+    download-installer.cdn.mozilla.net
+    addons.mozilla.org
+    s0.awsstatic.com
+    d1.awsstatic.com
+    images-na.ssl-images-amazon.com
+    m.media-amazon.com
+    player.live-video.net
+    one-piece.com
+    lol.secure.dyn.riotcdn.net
+    www.lovelive-anime.jp
+    www.swift.com
+    academy.nvidia.com
+    www.cisco.com
+    www.samsung.com
+    www.amd.com
+    cdn-dynmedia-1.microsoft.com
+    software.download.prss.microsoft.com
+    dl.google.com
+    www.google-analytics.com
+    www.mytvsuper.com
+    genshin.hoyoverse.com
 )
 
 is_random_ss_method=${ss_method_list[$(shuf -i 4-6 -n1)]} # random only use ss2022
