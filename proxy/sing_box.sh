@@ -1,6 +1,6 @@
 #!/bin/bash
 author=railzen
-is_sh_ver=V0.0.19
+is_sh_ver=V0.0.20
 
 # bash fonts colors
 red='\e[31m'
@@ -1401,7 +1401,7 @@ get() {
             else
                 is_servername=$realityServerName
             fi
-            echo -e "域名 : ${realityServerName} "
+            echo -e "域名 : ${is_servername} "
             [[ ! $is_private_key ]] && get_pbk
             is_json_add="tls:{enabled:true,server_name:\"$is_servername\",reality:{enabled:true,handshake:{server:\"$is_servername\",server_port:443},private_key:\"$is_private_key\",short_id:[\"\"]}}"
             [[ $is_lower =~ "http" ]] && {
@@ -1615,7 +1615,7 @@ info() {
         else
             tt='\t\t'
         fi
-        msg "$a $tt= \e[${is_color}m${is_info_str[$i]}\e[0m"
+        msg "$a $tt= ${is_info_str[$i]}"
     done
 
     if [[ $is_url ]]; then
