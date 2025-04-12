@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.8 Build250411"
+main_version="V1.1.9 Build250412"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -1129,9 +1129,9 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
       echo "------------------------"
       echo "2. 修改登录密码"
       echo "3. ROOT密码登录模式"
-      echo "4. 安装Python最新版"
-      echo "5. 开放所有端口"
-      echo "6. 修改SSH连接端口"
+      echo "4. ROOT私钥登录模式"
+      echo "5. 修改SSH连接端口"
+      echo "6. 开放所有端口"
       echo "7. 优化DNS地址"
       echo "8. 一键重装系统"
       echo "9. 禁用ROOT账户创建新账户"
@@ -1149,9 +1149,10 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
       echo "21. 本机host解析"
       echo "22. fail2banSSH防御程序"
       echo "23. 限流自动关机"
-      echo "24. ROOT私钥登录模式"
+      echo "24. 安装Python最新版"
       echo "25. 添加开机启动服务"
       echo "26. 进行TCP窗口调优"
+      echo "27. 网络初始化超时优化"
       echo "------------------------"
       echo "99. 重启服务器"
       echo "------------------------"
@@ -1178,94 +1179,67 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
               ;;
 
           4)
-            root_use
+                root_use
+                echo "ROOT私钥登录模式"
+                echo "------------------------"
+                echo "1. 上传个人SSH密钥"
+                echo "2. 生成新的SSH密钥"
+                echo "3. 恢复密码登录模式"
+                echo "------------------------"
+                echo "0. 退出"
+                echo "------------------------"
+                read -p "请输入你的选择: " choice
+                case $choice in
+                    1)
+                        clear
+                        echo "使用密钥登录会关闭密码登录方式，需要使用私钥进行SSH登录, 按Ctrl+C取消"
+                        add_sshkey
+                        ;;
 
-            # 系统检测
-            OS=$(cat /etc/os-release | grep -o -E "Debian|Ubuntu|CentOS" | head -n 1)
+                    2)
+                        # ssh-keygen -t rsa -b 4096 -C "xxxx@gmail.com" -f /root/.ssh/sshkey -N ""
+                        ssh-keygen -t rsa -b 4096 -C "email@gmail.com" -f /root/.ssh/new_generated_sshkey -N ""
+                        cat ~/.ssh/new_generated_sshkey.pub >> ~/.ssh/authorized_keys
+                        chmod 600 ~/.ssh/authorized_keys
+                        echo "使用密钥登录会关闭密码登录方式，需要使用私钥进行SSH登录"
+                        echo -e "私钥信息已生成，${Yellow}该私钥只会显示一次${White}，请务必保存用于以后的SSH登录"
+                        echo "--------------------------------"
+                        cat ~/.ssh/new_generated_sshkey
+                        echo "--------------------------------"
+                        echo "Public Key:"
+                        cat ~/.ssh/new_generated_sshkey.pub
+                        echo "--------------------------------"
+                        # 用完就删掉，不保存在服务器上避免泄露，密钥由用户自己保存
+                        rm -f ~/.ssh/new_generated_sshkey*
+                        sed -i -e 's/^\s*#\?\s*PermitRootLogin .*/PermitRootLogin prohibit-password/' \
+                        -e 's/^\s*#\?\s*PasswordAuthentication .*/PasswordAuthentication no/' \
+                        -e 's/^\s*#\?\s*PubkeyAuthentication .*/PubkeyAuthentication yes/' \
+                        -e 's/^\s*#\?\s*ChallengeResponseAuthentication .*/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
+                        rm -rf /etc/ssh/sshd_config.d/* /etc/ssh/ssh_config.d/*
+                        read -p "按任意键重启SSH以生效..." temp
+                        restart_ssh
+                        echo -e "${Green}ROOT私钥登录已开启，已关闭ROOT密码登录，重连将会生效${White}"
+                        ;;
+                    3)
+                        sed -i 's/^\s*#\?\s*PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config;
+                        sed -i 's/^\s*#\?\s*PasswordAuthentication.*/PasswordAuthentication yes/g' /etc/ssh/sshd_config;
+                        rm -rf /etc/ssh/sshd_config.d/* /etc/ssh/ssh_config.d/*
+                        restart_ssh
+                        echo -e "${Green}ROOT登录设置完毕！${White}"
+                        ;;
+                    0)
+                        break
+                        ;;
+                    *)
+                        echo "无效的选择，请重新输入。"
+                        ;;
+                esac
 
-            if [[ $OS == "Debian" || $OS == "Ubuntu" || $OS == "CentOS" ]]; then
-                echo -e "检测到你的系统是 ${Yellow}${OS}${White}"
-            else
-                echo -e "${Red}很抱歉，你的系统不受支持！${White}"
-                exit 1
-            fi
 
-            # 检测安装Python3的版本
-            VERSION=$(python3 -V 2>&1 | awk '{print $2}')
-
-            # 获取最新Python3版本
-            PY_VERSION=$(curl -s https://www.python.org/ | grep "downloads/release" | grep -o 'Python [0-9.]*' | grep -o '[0-9.]*')
-
-            # 卸载Python3旧版本
-            if [[ $VERSION == "3"* ]]; then
-                echo -e "${Yellow}你的Python3版本是${White}${Red}${VERSION}${White}，${Yellow}最新版本是${White}${Red}${PY_VERSION}${White}"
-                read -p "是否确认升级最新版Python3？默认不升级 [y/N]: " CONFIRM
-                if [[ $CONFIRM == "y" ]]; then
-                    if [[ $OS == "CentOS" ]]; then
-                        echo ""
-                        rm-rf /usr/local/python3* >/dev/null 2>&1
-                    else
-                        apt --purge remove python3 python3-pip -y
-                        rm-rf /usr/local/python3*
-                    fi
-                else
-                    echo -e "${Yellow}已取消升级Python3${White}"
-                    exit 1
-                fi
-            else
-                echo -e "${Red}检测到没有安装Python3。${White}"
-                read -p "是否确认安装最新版Python3？默认安装 [Y/n]: " CONFIRM
-                if [[ $CONFIRM != "n" ]]; then
-                    echo -e "${Green}开始安装最新版Python3...${White}"
-                else
-                    echo -e "${Yellow}已取消安装Python3${White}"
-                    exit 1
-                fi
-            fi
-
-            # 安装相关依赖
-            if [[ $OS == "CentOS" ]]; then
-                yum update
-                yum groupinstall -y "development tools"
-                yum install wget openssl-devel bzip2-devel libffi-devel zlib-devel -y
-            else
-                apt update
-                apt install wget build-essential libreadline-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev -y
-            fi
-
-            # 安装python3
-            cd /root/
-            wget https://www.python.org/ftp/python/${PY_VERSION}/Python-"$PY_VERSION".tgz
-            tar -zxf Python-${PY_VERSION}.tgz
-            cd Python-${PY_VERSION}
-            ./configure --prefix=/usr/local/python3
-            make -j $(nproc)
-            make install
-            if [ $? -eq 0 ];then
-                rm -f /usr/local/bin/python3*
-                rm -f /usr/local/bin/pip3*
-                ln -sf /usr/local/python3/bin/python3 /usr/bin/python3
-                ln -sf /usr/local/python3/bin/pip3 /usr/bin/pip3
-                clear
-                echo -e "${Yellow}Python3安装${Green}成功，${White}版本为: ${White}${Green}${PY_VERSION}${White}"
-            else
-                clear
-                echo -e "${Red}Python3安装失败！${White}"
-                exit 1
-            fi
-            cd /root/ && rm -rf Python-${PY_VERSION}.tgz && rm -rf Python-${PY_VERSION}
               ;;
 
           5)
               root_use
-              iptables_open
-              remove iptables-persistent ufw firewalld iptables-services > /dev/null 2>&1
-              echo "端口已全部开放"
-              break
-              ;;
-          6)
-              root_use
-
               # 去掉 #Port 的注释
                 clear
                 sed -i 's/#Port/Port/' /etc/ssh/sshd_config
@@ -1298,6 +1272,13 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
                 fi
               ;;
 
+          6)
+              root_use
+              iptables_open
+              remove iptables-persistent ufw firewalld iptables-services > /dev/null 2>&1
+              echo "端口已全部开放"
+              break
+              ;;
 
           7)
             while true; do
@@ -2634,64 +2615,83 @@ EOF
 
 
           24)
-                root_use
-                echo "ROOT私钥登录模式"
-                echo "------------------------"
-                echo "1. 上传个人SSH密钥"
-                echo "2. 生成新的SSH密钥"
-                echo "3. 恢复密码登录模式"
-                echo "------------------------"
-                echo "0. 退出"
-                echo "------------------------"
-                read -p "请输入你的选择: " choice
-                case $choice in
-                    1)
-                        clear
-                        echo "使用密钥登录会关闭密码登录方式，需要使用私钥进行SSH登录, 按Ctrl+C取消"
-                        add_sshkey
-                        ;;
+            root_use
+            # 系统检测
+            OS=$(cat /etc/os-release | grep -o -E "Debian|Ubuntu|CentOS" | head -n 1)
 
-                    2)
-                        # ssh-keygen -t rsa -b 4096 -C "xxxx@gmail.com" -f /root/.ssh/sshkey -N ""
-                        ssh-keygen -t rsa -b 4096 -C "email@gmail.com" -f /root/.ssh/new_generated_sshkey -N ""
-                        cat ~/.ssh/new_generated_sshkey.pub >> ~/.ssh/authorized_keys
-                        chmod 600 ~/.ssh/authorized_keys
-                        echo "使用密钥登录会关闭密码登录方式，需要使用私钥进行SSH登录"
-                        echo -e "私钥信息已生成，${Yellow}该私钥只会显示一次${White}，请务必保存用于以后的SSH登录"
-                        echo "--------------------------------"
-                        cat ~/.ssh/new_generated_sshkey
-                        echo "--------------------------------"
-                        echo "Public Key:"
-                        cat ~/.ssh/new_generated_sshkey.pub
-                        echo "--------------------------------"
-                        # 用完就删掉，不保存在服务器上避免泄露，密钥由用户自己保存
-                        rm -f ~/.ssh/new_generated_sshkey*
-                        sed -i -e 's/^\s*#\?\s*PermitRootLogin .*/PermitRootLogin prohibit-password/' \
-                        -e 's/^\s*#\?\s*PasswordAuthentication .*/PasswordAuthentication no/' \
-                        -e 's/^\s*#\?\s*PubkeyAuthentication .*/PubkeyAuthentication yes/' \
-                        -e 's/^\s*#\?\s*ChallengeResponseAuthentication .*/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
-                        rm -rf /etc/ssh/sshd_config.d/* /etc/ssh/ssh_config.d/*
-                        read -p "按任意键重启SSH以生效..." temp
-                        restart_ssh
-                        echo -e "${Green}ROOT私钥登录已开启，已关闭ROOT密码登录，重连将会生效${White}"
-                        ;;
-                    3)
-                        sed -i 's/^\s*#\?\s*PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config;
-                        sed -i 's/^\s*#\?\s*PasswordAuthentication.*/PasswordAuthentication yes/g' /etc/ssh/sshd_config;
-                        rm -rf /etc/ssh/sshd_config.d/* /etc/ssh/ssh_config.d/*
-                        restart_ssh
-                        echo -e "${Green}ROOT登录设置完毕！${White}"
-                        ;;
-                    0)
-                        break
-                        ;;
-                    *)
-                        echo "无效的选择，请重新输入。"
-                        ;;
-                esac
+            if [[ $OS == "Debian" || $OS == "Ubuntu" || $OS == "CentOS" ]]; then
+                echo -e "检测到你的系统是 ${Yellow}${OS}${White}"
+            else
+                echo -e "${Red}很抱歉，你的系统不受支持！${White}"
+                exit 1
+            fi
 
+            # 检测安装Python3的版本
+            VERSION=$(python3 -V 2>&1 | awk '{print $2}')
 
-              ;;
+            # 获取最新Python3版本
+            PY_VERSION=$(curl -s https://www.python.org/ | grep "downloads/release" | grep -o 'Python [0-9.]*' | grep -o '[0-9.]*')
+
+            # 卸载Python3旧版本
+            if [[ $VERSION == "3"* ]]; then
+                echo -e "${Yellow}你的Python3版本是${White}${Red}${VERSION}${White}，${Yellow}最新版本是${White}${Red}${PY_VERSION}${White}"
+                read -p "是否确认升级最新版Python3？默认不升级 [y/N]: " CONFIRM
+                if [[ $CONFIRM == "y" ]]; then
+                    if [[ $OS == "CentOS" ]]; then
+                        echo ""
+                        rm-rf /usr/local/python3* >/dev/null 2>&1
+                    else
+                        apt --purge remove python3 python3-pip -y
+                        rm-rf /usr/local/python3*
+                    fi
+                else
+                    echo -e "${Yellow}已取消升级Python3${White}"
+                    exit 1
+                fi
+            else
+                echo -e "${Red}检测到没有安装Python3。${White}"
+                read -p "是否确认安装最新版Python3？默认安装 [Y/n]: " CONFIRM
+                if [[ $CONFIRM != "n" ]]; then
+                    echo -e "${Green}开始安装最新版Python3...${White}"
+                else
+                    echo -e "${Yellow}已取消安装Python3${White}"
+                    exit 1
+                fi
+            fi
+
+            # 安装相关依赖
+            if [[ $OS == "CentOS" ]]; then
+                yum update
+                yum groupinstall -y "development tools"
+                yum install wget openssl-devel bzip2-devel libffi-devel zlib-devel -y
+            else
+                apt update
+                apt install wget build-essential libreadline-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev -y
+            fi
+
+            # 安装python3
+            cd /root/
+            wget https://www.python.org/ftp/python/${PY_VERSION}/Python-"$PY_VERSION".tgz
+            tar -zxf Python-${PY_VERSION}.tgz
+            cd Python-${PY_VERSION}
+            ./configure --prefix=/usr/local/python3
+            make -j $(nproc)
+            make install
+            if [ $? -eq 0 ];then
+                rm -f /usr/local/bin/python3*
+                rm -f /usr/local/bin/pip3*
+                ln -sf /usr/local/python3/bin/python3 /usr/bin/python3
+                ln -sf /usr/local/python3/bin/pip3 /usr/bin/pip3
+                clear
+                echo -e "${Yellow}Python3安装${Green}成功，${White}版本为: ${White}${Green}${PY_VERSION}${White}"
+            else
+                clear
+                echo -e "${Red}Python3安装失败！${White}"
+                exit 1
+            fi
+            cd /root/ && rm -rf Python-${PY_VERSION}.tgz && rm -rf Python-${PY_VERSION}
+            ;;
+
           25)
               root_use
               echo "添加开机启动项"
@@ -2736,6 +2736,10 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
           26)
             clear
             curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/tools/tcptools.sh && chmod +x tcptools.sh && ./tcptools.sh
+            ;;
+
+          27)
+            [[ -z $(cat /usr/lib/systemd/system/systemd-networkd-wait-online.service | grep TimeoutStartSec) ]] && sed -i "s/RemainAfterExit=yes/RemainAfterExit=yes\nTimeoutStartSec=2sec/g" /usr/lib/systemd/system/systemd-networkd-wait-online.service && echo "成功将systemd-networkd-wait-online.service服务添加超时时间，TimeoutStartSec=2sec"
             ;;
 
           99)
