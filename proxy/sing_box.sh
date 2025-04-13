@@ -424,7 +424,7 @@ create() {
                 fi
                 echo -e "域名 : ${is_servername} "
                 ;;
-            *) echo "无需指定域名" ;;
+            *) echo -e "无需指定域名$2" ;;
         esac
 
         # get json
