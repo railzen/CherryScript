@@ -1922,7 +1922,7 @@ main_menu_show() {
 
 start_script() {
 # core ver
-is_core_ver=$($is_core_bin version | head -n1 | cut -d " " -f3) > /dev/null 2>&1
+[[ -f $is_core_bin ]] && is_core_ver=$($is_core_bin version | head -n1 | cut -d " " -f3)
 
 if [[ $(pgrep -f $is_core_bin) ]]; then
     is_core_status=$(_green running)
@@ -1955,7 +1955,17 @@ main_menu_show
 
 install_script_start()
 {
+    [[ -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && {
+        #err "检测到脚本已安装, 如需重装请使用${green} ${is_core} reinstall ${none}命令."
+        cd /etc/sing-box/sh
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box.sh"
+        clear
+        start_script
+        exit 0
+    }
     # start installing...
+
+    echo "Installing Script..."
     [[ $is_core_ver ]] && msg warn "${is_core_name} 版本: ${yellow}$is_core_ver${none}"
     [[ $proxy ]] && msg warn "使用代理: ${yellow}$proxy${none}"
     # if is_core_file, copy file
