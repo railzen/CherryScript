@@ -415,7 +415,7 @@ create() {
         
         #debug
         case "$2" in
-            *reality*) 
+            *REALITY*) 
                 read -r -p "请输入目标域名，[回车]随机域名:" realityServerName
                 if [[ -z "${realityServerName}" ]]; then
                     [[ ! $is_servername ]] && is_servername=$is_random_servername
@@ -424,7 +424,6 @@ create() {
                 fi
                 echo -e "域名 : ${is_servername} "
                 ;;
-            *) echo -e "无需指定域名$2" ;;
         esac
 
         # get json
