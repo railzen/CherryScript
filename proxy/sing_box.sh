@@ -412,8 +412,20 @@ create() {
             is_config_name=$2-${port}.json
         fi
         is_json_file=$is_conf_dir/$is_config_name
+        
+        #debug
+        if [[ $2 =~ "reality" ]];then
+            read -r -p "请输入目标域名，[回车]随机域名:" realityServerName
+            if [[ -z "${realityServerName}" ]]; then
+                [[ ! $is_servername ]] && is_servername=$is_random_servername
+            else
+                is_servername=$realityServerName
+            fi
+            echo -e "域名 : ${is_servername} "
+        fi
         # get json
         [[ $is_change || ! $json_str ]] && get protocol $2
+
         [[ $net == "reality" ]] && is_add_public_key=",outbounds:[{type:\"direct\"},{tag:\"public_key_$is_public_key\",type:\"direct\"}]"
         is_new_json=$(jq "{inbounds:[{tag:\"$is_config_name\",type:\"$is_protocol\",$is_listen,listen_port:$port,$json_str}]$is_add_public_key}" <<<{})
         [[ $is_test_json ]] && return # tmp test
@@ -1395,14 +1407,8 @@ get() {
             ;;
         *reality*)
             net=reality
-            read -r -p "请输入目标域名，[回车]随机域名:" realityServerName
-            if [[ -z "${realityServerName}" ]]; then
-                [[ ! $is_servername ]] && is_servername=$is_random_servername
-            else
-                is_servername=$realityServerName
-            fi
-            echo -e "域名 : ${is_servername} "
-            [[ ! $is_private_key ]] && get_pbk
+            [[ ! $is_private_key ]] && 
+            [[ ! $is_servername ]] && is_servername=$is_random_servername
             is_json_add="tls:{enabled:true,server_name:\"$is_servername\",reality:{enabled:true,handshake:{server:\"$is_servername\",server_port:443},private_key:\"$is_private_key\",short_id:[\"\"]}}"
             [[ $is_lower =~ "http" ]] && {
                 is_json_add="$is_json_add,transport:{type:\"http\"}"
