@@ -1,6 +1,6 @@
 #!/bin/bash
 author=railzen
-is_sh_ver=V1.0.0
+is_sh_ver=V1.0.1
 
 # bash fonts colors
 red='\e[31m'
@@ -1870,6 +1870,7 @@ exit_and_del_tmpdir() {
 # main menu; if no prefer args.
 main_menu_show() {
     msg "------------- Sing-Box script $is_sh_ver -----------------"
+    [[ -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && \
     msg "Sing-Box $is_core_ver: $is_core_status"
     msg "-------------------------------------------------------"
     #ask mainmenu
@@ -1886,6 +1887,7 @@ main_menu_show() {
     read -p "请输入你的选择: " REPLY
     case $REPLY in
     1)
+        install_script_start
         add
         ;;
     2)
@@ -1962,25 +1964,11 @@ fi
 main_menu_show
 }
 
-# main
-chenk_install() {
-
-    # check old version
-    [[ -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && {
-        #err "检测到脚本已安装, 如需重装请使用${green} ${is_core} reinstall ${none}命令."
-        cd /etc/sing-box/sh
-        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box.sh"
-        clear
-        start_script
-        exit 0
-    }
-
-    clear
-    # start installing...
+install_script_start()
+{
+        # start installing...
     [[ $is_core_ver ]] && msg warn "${is_core_name} 版本: ${yellow}$is_core_ver${none}"
     [[ $proxy ]] && msg warn "使用代理: ${yellow}$proxy${none}"
-    # create tmpdir
-    mkdir -p $tmpdir
     # if is_core_file, copy file
     [[ $is_core_file ]] && {
         cp -f $is_core_file $is_core_ok
@@ -2020,8 +2008,6 @@ chenk_install() {
     # check background tasks status
     check_status
 
-    # create sh dir...
-    mkdir -p $is_sh_dir
 
     # create core bin dir
     mkdir -p $is_core_dir/bin
@@ -2062,10 +2048,34 @@ chenk_install() {
     mkdir -p $is_conf_dir
     clear
     echo "Install Finish"
+}
+# main
+chenk_install() {
 
-   # remove tmp dir and exit.
+    # check old version
+    [[ -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && {
+        #err "检测到脚本已安装, 如需重装请使用${green} ${is_core} reinstall ${none}命令."
+        cd /etc/sing-box/sh
+        curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box.sh"
+        clear
+        start_script
+        exit 0
+    }
+
+    clear
+    # create tmpdir
+    mkdir -p $tmpdir
+    
+    # create sh dir...
+    mkdir -p $is_sh_dir
+
+    #install_script_start
+
+    cd $is_sh_dir
+    curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box.sh"
     start_script
     
+    # remove tmp dir and exit.
     exit_and_del_tmpdir ok
 }
 
