@@ -424,8 +424,8 @@ create() {
                         is_servername=$realityServerName
                     fi
                     echo -e "域名 : ${is_servername} "
-                    ;;
                 fi
+            ;;
         esac
 
         # get json
