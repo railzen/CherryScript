@@ -1,6 +1,6 @@
 #!/bin/bash
 author=railzen
-is_sh_ver=V1.0.1
+is_sh_ver=V1.0.2
 
 # bash fonts colors
 red='\e[31m'
