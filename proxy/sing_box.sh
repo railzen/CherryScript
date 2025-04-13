@@ -1,6 +1,6 @@
 #!/bin/bash
 author=railzen
-is_sh_ver=V1.0.2
+is_sh_ver=V1.0.3
 
 # bash fonts colors
 red='\e[31m'
@@ -1960,8 +1960,7 @@ install_script_start()
         cd /etc/sing-box/sh
         curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box.sh"
         clear
-        start_script
-        exit 0
+        return
     }
     # start installing...
 
