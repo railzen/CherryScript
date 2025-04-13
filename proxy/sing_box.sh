@@ -1924,17 +1924,6 @@ start_script() {
 # core ver
 is_core_ver=$($is_core_bin version | head -n1 | cut -d " " -f3) > /dev/null 2>&1
 
-# tmp tls key
-is_tls_cer=$is_core_dir/bin/tls.cer
-is_tls_key=$is_core_dir/bin/tls.key
-[[ ! -f $is_tls_cer || ! -f $is_tls_key ]] && {
-    is_tls_tmp=${is_tls_key/key/tmp}
-    $is_core_bin generate tls-keypair tls -m 456 >$is_tls_tmp > /dev/null 2>&1
-    awk '/BEGIN PRIVATE KEY/,/END PRIVATE KEY/' $is_tls_tmp >$is_tls_key > /dev/null 2>&1
-    awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/' $is_tls_tmp >$is_tls_cer > /dev/null 2>&1
-    rm $is_tls_tmp
-}
-
 if [[ $(pgrep -f $is_core_bin) ]]; then
     is_core_status=$(_green running)
 else
@@ -1966,7 +1955,7 @@ main_menu_show
 
 install_script_start()
 {
-        # start installing...
+    # start installing...
     [[ $is_core_ver ]] && msg warn "${is_core_name} 版本: ${yellow}$is_core_ver${none}"
     [[ $proxy ]] && msg warn "使用代理: ${yellow}$proxy${none}"
     # if is_core_file, copy file
@@ -2046,6 +2035,18 @@ install_script_start()
 
     # create condf dir
     mkdir -p $is_conf_dir
+    
+    # tmp tls key
+    is_tls_cer=$is_core_dir/bin/tls.cer
+    is_tls_key=$is_core_dir/bin/tls.key
+    [[ ! -f $is_tls_cer || ! -f $is_tls_key ]] && {
+        is_tls_tmp=${is_tls_key/key/tmp}
+        $is_core_bin generate tls-keypair tls -m 456 >$is_tls_tmp
+        awk '/BEGIN PRIVATE KEY/,/END PRIVATE KEY/' $is_tls_tmp >$is_tls_key
+        awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/' $is_tls_tmp >$is_tls_cer
+        rm $is_tls_tmp
+    }
+    
     clear
     echo "Install Finish"
 }
