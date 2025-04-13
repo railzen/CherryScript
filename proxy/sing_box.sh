@@ -1871,7 +1871,7 @@ exit_and_del_tmpdir() {
 main_menu_show() {
     msg "------------- Sing-Box script $is_sh_ver -----------------"
     [[ -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && \
-    msg "Sing-Box $is_core_ver: $is_core_status"
+    msg "Sing-Box $is_core_ver: $is_core_status" && \
     msg "-------------------------------------------------------"
     #ask mainmenu
     echo "1.添加配置"
@@ -1922,16 +1922,16 @@ main_menu_show() {
 
 start_script() {
 # core ver
-is_core_ver=$($is_core_bin version | head -n1 | cut -d " " -f3)
+is_core_ver=$($is_core_bin version | head -n1 | cut -d " " -f3) > /dev/null 2>&1
 
 # tmp tls key
 is_tls_cer=$is_core_dir/bin/tls.cer
 is_tls_key=$is_core_dir/bin/tls.key
 [[ ! -f $is_tls_cer || ! -f $is_tls_key ]] && {
     is_tls_tmp=${is_tls_key/key/tmp}
-    $is_core_bin generate tls-keypair tls -m 456 >$is_tls_tmp
-    awk '/BEGIN PRIVATE KEY/,/END PRIVATE KEY/' $is_tls_tmp >$is_tls_key
-    awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/' $is_tls_tmp >$is_tls_cer
+    $is_core_bin generate tls-keypair tls -m 456 >$is_tls_tmp > /dev/null 2>&1
+    awk '/BEGIN PRIVATE KEY/,/END PRIVATE KEY/' $is_tls_tmp >$is_tls_key > /dev/null 2>&1
+    awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/' $is_tls_tmp >$is_tls_cer > /dev/null 2>&1
     rm $is_tls_tmp
 }
 
