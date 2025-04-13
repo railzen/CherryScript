@@ -416,7 +416,7 @@ create() {
         #debug
         case "$2" in
             *REALITY*) 
-                if [[ ! is_change == 1 ]];then
+                if [[ ! $is_change == 1 ]];then
                     read -r -p "请输入目标域名，[回车]随机域名:" realityServerName
                     if [[ -z "${realityServerName}" ]]; then
                         [[ ! $is_servername ]] && is_servername=$is_random_servername
