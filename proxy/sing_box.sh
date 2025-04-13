@@ -1,6 +1,6 @@
 #!/bin/bash
 author=railzen
-is_sh_ver=V1.0.3
+is_sh_ver=V1.0.4
 
 # bash fonts colors
 red='\e[31m'
@@ -414,15 +414,19 @@ create() {
         is_json_file=$is_conf_dir/$is_config_name
         
         #debug
-        if [[ $2 =~ "reality" ]];then
-            read -r -p "请输入目标域名，[回车]随机域名:" realityServerName
-            if [[ -z "${realityServerName}" ]]; then
-                [[ ! $is_servername ]] && is_servername=$is_random_servername
-            else
-                is_servername=$realityServerName
-            fi
-            echo -e "域名 : ${is_servername} "
-        fi
+        case "$2" in
+            *reality*) 
+                read -r -p "请输入目标域名，[回车]随机域名:" realityServerName
+                if [[ -z "${realityServerName}" ]]; then
+                    [[ ! $is_servername ]] && is_servername=$is_random_servername
+                else
+                    is_servername=$realityServerName
+                fi
+                echo -e "域名 : ${is_servername} "
+                ;;
+            *) echo "无需指定域名" ;;
+        esac
+
         # get json
         [[ $is_change || ! $json_str ]] && get protocol $2
 
@@ -1407,8 +1411,8 @@ get() {
             ;;
         *reality*)
             net=reality
-            [[ ! $is_private_key ]] && 
             [[ ! $is_servername ]] && is_servername=$is_random_servername
+            [[ ! $is_private_key ]] && get_pbk
             is_json_add="tls:{enabled:true,server_name:\"$is_servername\",reality:{enabled:true,handshake:{server:\"$is_servername\",server_port:443},private_key:\"$is_private_key\",short_id:[\"\"]}}"
             [[ $is_lower =~ "http" ]] && {
                 is_json_add="$is_json_add,transport:{type:\"http\"}"
