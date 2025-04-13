@@ -1965,7 +1965,7 @@ install_script_start()
     }
     # start installing...
 
-    echo "Installing Script..."
+    _green "Installing Script..."
     [[ $is_core_ver ]] && msg warn "${is_core_name} 版本: ${yellow}$is_core_ver${none}"
     [[ $proxy ]] && msg warn "使用代理: ${yellow}$proxy${none}"
     # if is_core_file, copy file
@@ -2058,7 +2058,7 @@ install_script_start()
     }
     
     clear
-    echo "Install Finish"
+    _green "Install Finish"
 }
 # main
 chenk_install() {
