@@ -1,6 +1,6 @@
 #!/bin/bash
 author=railzen
-is_sh_ver=V1.0.4
+is_sh_ver=V1.0.5
 
 # bash fonts colors
 red='\e[31m'
@@ -416,14 +416,16 @@ create() {
         #debug
         case "$2" in
             *REALITY*) 
-                read -r -p "请输入目标域名，[回车]随机域名:" realityServerName
-                if [[ -z "${realityServerName}" ]]; then
-                    [[ ! $is_servername ]] && is_servername=$is_random_servername
-                else
-                    is_servername=$realityServerName
+                if [[ ! is_change == 1 ]];then
+                    read -r -p "请输入目标域名，[回车]随机域名:" realityServerName
+                    if [[ -z "${realityServerName}" ]]; then
+                        [[ ! $is_servername ]] && is_servername=$is_random_servername
+                    else
+                        is_servername=$realityServerName
+                    fi
+                    echo -e "域名 : ${is_servername} "
+                    ;;
                 fi
-                echo -e "域名 : ${is_servername} "
-                ;;
         esac
 
         # get json
