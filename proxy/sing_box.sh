@@ -186,6 +186,7 @@ servername_list=(
     www.google-analytics.com
     www.mytvsuper.com
     genshin.hoyoverse.com
+    www.tesla.com
 )
 
 is_random_ss_method=${ss_method_list[$(shuf -i 4-6 -n1)]} # random only use ss2022
@@ -1216,11 +1217,10 @@ add() {
 install_service() {
     case $1 in
     $is_core)
-        is_doc_site=https://sing-box.sagernet.org/
         cat >/lib/systemd/system/$is_core.service <<<"
 [Unit]
 Description=$is_core_name Service
-Documentation=$is_doc_site
+Documentation=https://sing-box.sagernet.org/
 After=network.target nss-lookup.target
 
 [Service]
