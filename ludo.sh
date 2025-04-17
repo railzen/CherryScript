@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.9 Build250412"
+main_version="V1.1.10 Build250417"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -24,15 +24,12 @@ echo "3. 系统清理"
 echo "4. 常用工具 ▶"
 echo "5. BBR管理 ▶"
 echo "6. Docker管理 ▶ "
-echo "7. WARP管理 ▶ "
-echo "8. 测试脚本合集 ▶ "
-echo "9. 甲骨文云脚本合集 ▶ "
-echo "10. 系统工具 ▶ "
-echo "11. 面板工具 ▶ "
-echo "12. 安装Snell V4 "
-echo "13. 安装Hysteria2 "
-echo "14. 安装SingBox脚本 ▶ "
-
+echo "7. 功能脚本合集 ▶ "
+echo "8. 系统工具 ▶ "
+echo "9. 面板工具 ▶ "
+echo "10. 安装Snell V4 "
+echo "11. 安装Hysteria2 "
+echo "12. 安装SingBox脚本 ▶ "
 echo "------------------------"
 if [[ ${startup_check_new_version} == "true" ]]; then
     echo -e "99. 脚本更新 ${DarkYellow}● ${White}"
@@ -839,23 +836,14 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
     done
     ;;
 
-
   7)
-    clear
-    install wget
-    wget -N https://gitlab.com/fscarmen/warp/-/raw/main/menu.sh && bash menu.sh [option] [lisence/url/token]
-    ;;
-
-  8)
     while true; do
       clear
-      echo "▶ 测试脚本合集"
+      echo "▶ 功能脚本合集"
       echo ""
-      echo "----IP及解锁状态检测-----------"
-      echo "1. ChatGPT解锁状态检测"
-      echo "2. Region流媒体解锁测试"
-      echo "3. Yeahwu流媒体解锁检测"
-      echo "4. XYkt_IP质量体检脚本"
+      echo "----功能脚本------------------"
+      echo "1. WARP管理 ▶ "
+      echo "2. 甲骨文云脚本合集 ▶"
       echo ""
       echo "----网络线路测速-----------"
       echo "11. besttrace三网回程延迟路由测试"
@@ -870,6 +858,12 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
       echo "21. yabs性能测试"
       echo "22. icu/gb5 CPU性能测试脚本"
       echo ""
+      echo "----IP及解锁状态检测------"
+      echo "25. ChatGPT解锁状态检测"
+      echo "26. Region流媒体解锁测试"
+      echo "27. Yeahwu流媒体解锁检测"
+      echo "28. XYkt_IP质量体检脚本"
+      echo ""
       echo "----综合性测试-----------"
       echo "31. bench性能测试"
       echo "32. spiritysdx融合怪测评"
@@ -882,22 +876,140 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
 
       case $sub_choice in
           1)
-              clear
-              bash <(curl -Ls https://cdn.jsdelivr.net/gh/missuo/OpenAI-Checker/openai.sh)
-              ;;
+            clear
+            install wget
+            wget -N https://gitlab.com/fscarmen/warp/-/raw/main/menu.sh && bash menu.sh [option] [lisence/url/token]
+            ;;
           2)
-              clear
-              bash <(curl -L -s check.unlock.media)
-              ;;
-          3)
-              clear
-              install wget
-              wget -qO- https://github.com/yeahwu/check/raw/main/check.sh | bash
-              ;;
-          4)
-              clear
-              bash <(curl -Ls IP.Check.Place)
-              ;;
+          while true; do
+                  clear
+                  echo "▶ 甲骨文云脚本合集"
+                  echo "------------------------"
+                  echo "1. 安装闲置机器活跃脚本"
+                  echo "2. 卸载闲置机器活跃脚本"
+                  echo "------------------------"
+                  echo "3. DD重装系统脚本"
+                  echo "4. R探长开机脚本"
+                  echo "------------------------"
+                  echo "5. 开启ROOT密码登录模式"
+                  echo "------------------------"
+                  echo "0. 返回主菜单"
+                  echo "------------------------"
+                  read -p "请输入你的选择: " sub_choice
+
+                  case $sub_choice in
+                      1)
+                          clear
+                          echo "活跃脚本: CPU占用10-20% 内存占用15% "
+                          read -p "确定安装吗？(Y/N): " choice
+                          case "$choice" in
+                            [Yy])
+
+                              install_docker
+
+                              # 设置默认值
+                              DEFAULT_CPU_CORE=1
+                              DEFAULT_CPU_UTIL="10-20"
+                              DEFAULT_MEM_UTIL=20
+                              DEFAULT_SPEEDTEST_INTERVAL=120
+
+                              # 提示用户输入CPU核心数和占用百分比，如果回车则使用默认值
+                              read -p "请输入CPU核心数 [默认: $DEFAULT_CPU_CORE]: " cpu_core
+                              cpu_core=${cpu_core:-$DEFAULT_CPU_CORE}
+
+                              read -p "请输入CPU占用百分比范围（例如10-20） [默认: $DEFAULT_CPU_UTIL]: " cpu_util
+                              cpu_util=${cpu_util:-$DEFAULT_CPU_UTIL}
+
+                              read -p "请输入内存占用百分比 [默认: $DEFAULT_MEM_UTIL]: " mem_util
+                              mem_util=${mem_util:-$DEFAULT_MEM_UTIL}
+
+                              read -p "请输入Speedtest间隔时间（秒） [默认: $DEFAULT_SPEEDTEST_INTERVAL]: " speedtest_interval
+                              speedtest_interval=${speedtest_interval:-$DEFAULT_SPEEDTEST_INTERVAL}
+
+                              # 运行Docker容器
+                              docker run -itd --name=lookbusy --restart=always \
+                                  -e TZ=Asia/Shanghai \
+                                  -e CPU_UTIL="$cpu_util" \
+                                  -e CPU_CORE="$cpu_core" \
+                                  -e MEM_UTIL="$mem_util" \
+                                  -e SPEEDTEST_INTERVAL="$speedtest_interval" \
+                                  fogforest/lookbusy
+
+                              ;;
+                            [Nn])
+
+                              ;;
+                            *)
+                              echo "无效的选择，请输入 Y 或 N。"
+                              ;;
+                          esac
+                          ;;
+                      2)
+                          clear
+                          docker rm -f lookbusy
+                          docker rmi fogforest/lookbusy
+                          ;;
+
+                      3)
+                      clear
+                      echo "请备份数据，将为你重装系统，预计花费15分钟。"
+                      read -p "确定继续吗？(Y/N): " choice
+
+                      case "$choice" in
+                        [Yy])
+                          while true; do
+                            read -p "请选择要重装的系统:  1. Debian12 | 2. Ubuntu20.04 : " sys_choice
+
+                            case "$sys_choice" in
+                              1)
+                                xitong="-d 12"
+                                break  # 结束循环
+                                ;;
+                              2)
+                                xitong="-u 20.04"
+                                break  # 结束循环
+                                ;;
+                              *)
+                                echo "无效的选择，请重新输入。"
+                                ;;
+                            esac
+                          done
+
+                          read -p "请输入你重装后的密码: " vpspasswd
+                          install wget
+                          bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh') $xitong -v 64 -p $vpspasswd -port 22
+                          ;;
+                        [Nn])
+                          echo "已取消"
+                          ;;
+                        *)
+                          echo "无效的选择，请输入 Y 或 N。"
+                          ;;
+                      esac
+                          ;;
+
+                      4)
+                          clear
+                          echo "该功能暂不支持！"
+                          ;;
+                      5)
+                          clear
+                          add_sshpasswd
+
+                          ;;
+                      0)
+                          back_main
+
+                          ;;
+                      *)
+                          echo "无效的输入!"
+                          ;;
+                  esac
+                  break_end
+
+                done
+                ;;
+            
           11)
               clear
               install wget
@@ -965,7 +1077,23 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
               add_swap
               bash <(curl -sL bash.icu/gb5)
               ;;
-
+          25)
+              clear
+              bash <(curl -Ls https://cdn.jsdelivr.net/gh/missuo/OpenAI-Checker/openai.sh)
+              ;;
+          26)
+              clear
+              bash <(curl -L -s check.unlock.media)
+              ;;
+          27)
+              clear
+              install wget
+              wget -qO- https://github.com/yeahwu/check/raw/main/check.sh | bash
+              ;;
+          28)
+              clear
+              bash <(curl -Ls IP.Check.Place)
+              ;;
           31)
               clear
               curl -Lso- bench.sh | bash
@@ -990,137 +1118,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
     done
     ;;
 
-  9)
-     while true; do
-      clear
-      echo "▶ 甲骨文云脚本合集"
-      echo "------------------------"
-      echo "1. 安装闲置机器活跃脚本"
-      echo "2. 卸载闲置机器活跃脚本"
-      echo "------------------------"
-      echo "3. DD重装系统脚本"
-      echo "4. R探长开机脚本"
-      echo "------------------------"
-      echo "5. 开启ROOT密码登录模式"
-      echo "------------------------"
-      echo "0. 返回主菜单"
-      echo "------------------------"
-      read -p "请输入你的选择: " sub_choice
-
-      case $sub_choice in
-          1)
-              clear
-              echo "活跃脚本: CPU占用10-20% 内存占用15% "
-              read -p "确定安装吗？(Y/N): " choice
-              case "$choice" in
-                [Yy])
-
-                  install_docker
-
-                  # 设置默认值
-                  DEFAULT_CPU_CORE=1
-                  DEFAULT_CPU_UTIL="10-20"
-                  DEFAULT_MEM_UTIL=20
-                  DEFAULT_SPEEDTEST_INTERVAL=120
-
-                  # 提示用户输入CPU核心数和占用百分比，如果回车则使用默认值
-                  read -p "请输入CPU核心数 [默认: $DEFAULT_CPU_CORE]: " cpu_core
-                  cpu_core=${cpu_core:-$DEFAULT_CPU_CORE}
-
-                  read -p "请输入CPU占用百分比范围（例如10-20） [默认: $DEFAULT_CPU_UTIL]: " cpu_util
-                  cpu_util=${cpu_util:-$DEFAULT_CPU_UTIL}
-
-                  read -p "请输入内存占用百分比 [默认: $DEFAULT_MEM_UTIL]: " mem_util
-                  mem_util=${mem_util:-$DEFAULT_MEM_UTIL}
-
-                  read -p "请输入Speedtest间隔时间（秒） [默认: $DEFAULT_SPEEDTEST_INTERVAL]: " speedtest_interval
-                  speedtest_interval=${speedtest_interval:-$DEFAULT_SPEEDTEST_INTERVAL}
-
-                  # 运行Docker容器
-                  docker run -itd --name=lookbusy --restart=always \
-                      -e TZ=Asia/Shanghai \
-                      -e CPU_UTIL="$cpu_util" \
-                      -e CPU_CORE="$cpu_core" \
-                      -e MEM_UTIL="$mem_util" \
-                      -e SPEEDTEST_INTERVAL="$speedtest_interval" \
-                      fogforest/lookbusy
-
-                  ;;
-                [Nn])
-
-                  ;;
-                *)
-                  echo "无效的选择，请输入 Y 或 N。"
-                  ;;
-              esac
-              ;;
-          2)
-              clear
-              docker rm -f lookbusy
-              docker rmi fogforest/lookbusy
-              ;;
-
-          3)
-          clear
-          echo "请备份数据，将为你重装系统，预计花费15分钟。"
-          read -p "确定继续吗？(Y/N): " choice
-
-          case "$choice" in
-            [Yy])
-              while true; do
-                read -p "请选择要重装的系统:  1. Debian12 | 2. Ubuntu20.04 : " sys_choice
-
-                case "$sys_choice" in
-                  1)
-                    xitong="-d 12"
-                    break  # 结束循环
-                    ;;
-                  2)
-                    xitong="-u 20.04"
-                    break  # 结束循环
-                    ;;
-                  *)
-                    echo "无效的选择，请重新输入。"
-                    ;;
-                esac
-              done
-
-              read -p "请输入你重装后的密码: " vpspasswd
-              install wget
-              bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh') $xitong -v 64 -p $vpspasswd -port 22
-              ;;
-            [Nn])
-              echo "已取消"
-              ;;
-            *)
-              echo "无效的选择，请输入 Y 或 N。"
-              ;;
-          esac
-              ;;
-
-          4)
-              clear
-              echo "该功能暂不支持！"
-              ;;
-          5)
-              clear
-              add_sshpasswd
-
-              ;;
-          0)
-              back_main
-
-              ;;
-          *)
-              echo "无效的输入!"
-              ;;
-      esac
-      break_end
-
-    done
-    ;;
-
-  10)
+  8)
     while true; do
       clear
       echo "▶ 系统工具"
@@ -2760,7 +2758,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
     done
     ;;
 
-  11)
+  9)
     while true; do
       clear
       echo "▶ 面板工具"
@@ -3805,7 +3803,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
 
     done
     ;;
-  12)
+  10)
     #询问用户是否要安装Snell
         #read -p "是否要进入Snell V4安装脚本？(y/n): " choice
         #choice=y
@@ -3814,12 +3812,12 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
     bash -c "$(curl -sL https://raw.githubusercontent.com/railzen/CherryScript/main/snell/snell.sh)"
     ;;
 
-  13)
+  11)
     clear
     curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/setup_hysteria.sh && chmod +x setup_hysteria.sh && ./setup_hysteria.sh
     ;;
 
-  14)
+  12)
     clear
     curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box.sh && chmod +x sing_box.sh && ./sing_box.sh
     ;;
