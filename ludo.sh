@@ -1869,7 +1869,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
                         # version=$(wget -q https://raw.githubusercontent.com/railzen/CherryScript/main/tools/check_x86-64_psabi.sh && chmod +x check_x86-64_psabi.sh && ./check_x86-64_psabi.sh | grep -oP 'x86-64-v\K\d+|x86-64-v\d+')
 
                         apt update -y
-                        apt install -y linux-xanmod-x64v$version
+                        apt install -y linux-xanmod-lts-x64v$version
 
                         echo "XanMod内核已更新。重启后生效"
                         rm -f /etc/apt/sources.list.d/xanmod-release.list
