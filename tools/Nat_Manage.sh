@@ -23,14 +23,16 @@ firstAfterBoot=1
 lastConfig="/iptables_nat.sh"
 lastConfigTmp="/iptables_nat.sh_tmp"
 
+if ! command -v dig &>/dev/null; then
+    ####
+    echo "正在安装依赖...."
+    yum install -y bind-utils &> /dev/null
+    apt install -y dnsutils &> /dev/null
+    echo "Completed：依赖安装完毕"
+    echo ""
+    ####
+fi
 
-####
-echo "正在安装依赖...."
-yum install -y bind-utils &> /dev/null
-apt install -y dnsutils &> /dev/null
-echo "Completed：依赖安装完毕"
-echo ""
-####
 turnOnNat(){
     # 开启端口转发
     echo "1. 端口转发开启  【成功】"
@@ -90,8 +92,8 @@ dnatIfNeed(){
         local remote=$2
     else
         #解析出现错误, 换用dig命令
-        local remote=$(host -t a  $2|grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"|head -1)
-        #local remote=$(dig +short $2 | head -n 1)
+        #local remote=$(host -t a  $2|grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"|head -1)
+        local remote=$(f(){ d=$1; while r=$(dig +short "$d" | head -n1); do [[ $r =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] && echo "$r" && break || d=$r; done; }; f $2)
     fi
 
     if [ "$remote" = "" ];then
