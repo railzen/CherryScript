@@ -256,6 +256,7 @@ uninstall() {
 	rm -f /usr/local/bin/dnat.sh
 	#iptables -t nat -F PREROUTING
 	#iptables -t nat -F POSTROUTING
+	echo "卸载完成，已有规则将在重启后失效..."
 }
 
 break_end() {
