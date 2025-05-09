@@ -90,8 +90,8 @@ dnatIfNeed(){
         local remote=$2
     else
         #解析出现错误, 换用dig命令
-        #local remote=$(host -t a  $2|grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"|head -1)
-        local remote=$(dig +short $2 | head -n 1)
+        local remote=$(host -t a  $2|grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"|head -1)
+        #local remote=$(dig +short $2 | head -n 1)
     fi
 
     if [ "$remote" = "" ];then
