@@ -1,121 +1,260 @@
 #!/bin/bash
+red="\033[31m"
+black="\033[0m"
 
-# 默认配置（根据你的需求修改）
-PUBLIC_IF="eno1"       # 公网接口名称
-PRIVATE_NET="vmbr0"    # 内网网桥名称
-IPTABLES_SAVE_CMD="netfilter-persistent save"  # 持久化保存命令
+base=/opt/CherryScript/Nat-Forawrd
+conf=$base/conf
 
-# 临时文件记录规则
-RULES_FILE="/tmp/dnat_rules.txt"
+mkdir /opt/CherryScript 2>/dev/null
+mkdir $base 2>/dev/null
+touch $conf
 
-install() {
-    if [ $# -eq 0 ]; then
-        echo "未提供软件包参数!"
-        return 1
+setupService(){
+    cat > /usr/local/bin/dnat.sh <<"AAAA"
+#! /bin/bash
+[[ "$EUID" -ne '0' ]] && echo "Error:This script must be run as root!" && exit 1;
+
+
+
+base=/opt/CherryScript/Nat-Forawrd
+mkdir $base 2>/dev/null
+conf=$base/conf
+firstAfterBoot=1
+lastConfig="/iptables_nat.sh"
+lastConfigTmp="/iptables_nat.sh_tmp"
+
+
+####
+echo "正在安装依赖...."
+yum install -y bind-utils &> /dev/null
+apt install -y dnsutils &> /dev/null
+echo "Completed：依赖安装完毕"
+echo ""
+####
+turnOnNat(){
+    # 开启端口转发
+    echo "1. 端口转发开启  【成功】"
+    sed -n '/^net.ipv4.ip_forward=1/'p /etc/sysctl.conf | grep -q "net.ipv4.ip_forward=1"
+    if [ $? -ne 0 ]; then
+        echo -e "net.ipv4.ip_forward=1" >> /etc/sysctl.conf && sysctl -p
     fi
 
-    for package in "$@"; do
-        if ! command -v "$package" &>/dev/null; then
-            if command -v dnf &>/dev/null; then
-                dnf -y update && dnf install -y "$package"
-            elif command -v yum &>/dev/null; then
-                yum -y update && yum -y install "$package"
-            elif command -v apt &>/dev/null; then
-                apt update -y && apt install -y "$package"
-            elif command -v apk &>/dev/null; then
-                apk update && apk add "$package"
-            else
-                echo "未知的包管理器!"
-                return 1
-            fi
-        fi
+    #开放FORWARD链
+    echo "2. 开放iptbales中的FORWARD链  【成功】"
+    arr1=(`iptables -L FORWARD -n  --line-number |grep "REJECT"|grep "0.0.0.0/0"|sort -r|awk '{print $1,$2,$5}'|tr " " ":"|tr "\n" " "`)  #16:REJECT:0.0.0.0/0 15:REJECT:0.0.0.0/0
+    for cell in ${arr1[@]}
+    do
+        arr2=(`echo $cell|tr ":" " "`)  #arr2=16 REJECT 0.0.0.0/0
+        index=${arr2[0]}
+        echo 删除禁止FOWARD的规则$index
+        iptables -D FORWARD $index
     done
+    iptables --policy FORWARD ACCEPT
+}
+turnOnNat
 
-    return 0
+
+
+testVars(){
+    local localport=$1
+    local remotehost=$2
+    local remoteport=$3
+    # 判断端口是否为数字
+    local valid=
+    echo "$localport"|[ -n "`sed -n '/^[0-9][0-9]*$/p'`" ] && echo $remoteport |[ -n "`sed -n '/^[0-9][0-9]*$/p'`" ]||{
+       echo  -e "${red}本地端口和目标端口请输入数字！！${black}";
+       return 1;
+    }
 }
 
-# 添加规则
-add_rule() {
-  read -p "请输入本机端口 (例如 80): " EXT_PORT
-  read -p "请输入目标IP (例如 10.10.10.10): " DEST_IP
-  read -p "请输入目标端口 (例如 80): " DEST_PORT
+dnat(){
+     [ "$#" = "3" ]&&{
+        local localport=$1
+        local remote=$2
+        local remoteport=$3
 
-  # 校验输入格式
-  if ! [[ $EXT_PORT =~ ^[0-9]+$ ]] || ! [[ $DEST_PORT =~ ^[0-9]+$ ]]; then
-    echo "错误：端口必须是数字！"
-    exit 1
-  fi
-
-  if ! [[ $DEST_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo "错误：IP地址格式无效！"
-    exit 1
-  fi
-
-	localIP=$(ip -o -4 addr list | grep -Ev '\s(docker|lo)' | awk '{print $4}' | cut -d/ -f1 | grep -Ev '(^127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^172\.1[6-9]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^172\.2[0-9]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^172\.3[0-1]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^192\.168\.[0-9]{1,3}\.[0-9]{1,3}$)')
-	if [ "${localIP}" = "" ]; then
-			localIP=$(ip -o -4 addr list | grep -Ev '\s(docker|lo)' | awk '{print $4}' | cut -d/ -f1|head -n 1 )
-	fi
-  # 添加DNAT规则
-  iptables -t nat -A PREROUTING -p tcp --dport $EXT_PORT -j DNAT --to $DEST_IP:$DEST_PORT
-  iptables -t nat -A POSTROUTING -p tcp -d $DEST_IP --dport $DEST_PORT -j SNAT --to-source $localIP
-  iptables -t nat -A PREROUTING -p udp --dport $EXT_PORT -j DNAT --to $DEST_IP:$DEST_PORT
-  iptables -t nat -A POSTROUTING -p udp -d $DEST_IP --dport $DEST_PORT -j SNAT --to-source $localIP
-  iptables -A FORWARD  -p tcp --dport $DEST_PORT -d $DEST_IP -j ACCEPT
-
-
-
-  save_rules
-  echo "规则已添加：公网端口 $EXT_PORT => $DEST_IP:$DEST_PORT"
-  break_end
+        cat >> $lastConfigTmp <<EOF
+iptables -t nat -A PREROUTING -p tcp --dport $localport -j DNAT --to-destination $remote:$remoteport
+iptables -t nat -A PREROUTING -p udp --dport $localport -j DNAT --to-destination $remote:$remoteport
+iptables -t nat -A POSTROUTING -p tcp -d $remote --dport $remoteport -j SNAT --to-source $localIP
+iptables -t nat -A POSTROUTING -p udp -d $remote --dport $remoteport -j SNAT --to-source $localIP
+EOF
+    }
 }
 
-del_rule() {
-  list_rules
-  read -p "请输入要删除的规则编号: " RULE_NUM
+dnatIfNeed(){
+  [ "$#" = "3" ]&&{
+    local needNat=0
+    # 如果已经是ip
+    if [ "$(echo  $2 |grep -E -o '([0-9]{1,3}[\.]){3}[0-9]{1,3}')" != "" ];then
+        local remote=$2
+    else
+        local remote=$(host -t a  $2|grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"|head -1)
+    fi
 
-  # 获取规则内容
-  RULE=$(sed -n "${RULE_NUM}p" $RULES_FILE)
-  if [ -z "$RULE" ]; then
-    echo "错误：无效的规则编号！"
-    exit 1
-  fi
-
-  # 解析规则参数
-  EXT_PORT=$(echo "$RULE" | grep -oP 'dpt:\K\d+')
-  DEST_IP_PORT=$(echo "$RULE" | grep -oP 'to:\K\S+')
-  DEST_IP=${DEST_IP_PORT%:*}
-  DEST_PORT=${DEST_IP_PORT#*:}
-
-  # 删除规则
-  #iptables -t nat -D PREROUTING -p tcp --dport $EXT_PORT -j DNAT --to $DEST_IP:$DEST_PORT
-  iptables -D FORWARD  -p tcp --dport $DEST_PORT -d $DEST_IP -j ACCEPT
-  iptables -t nat -D PREROUTING -p tcp --dport $EXT_PORT -j DNAT --to $DEST_IP:$DEST_PORT
-  iptables -t nat -D POSTROUTING -p tcp -d $DEST_IP --dport $DEST_PORT -j SNAT --to-source $localIP
-  iptables -t nat -D PREROUTING -p udp --dport $EXT_PORT -j DNAT --to $DEST_IP:$DEST_PORT
-  iptables -t nat -D POSTROUTING -p udp -d $DEST_IP --dport $DEST_PORT -j SNAT --to-source $localIP
-
-  save_rules
-  echo "规则已删除：$RULE"
-  break_end
+    if [ "$remote" = "" ];then
+            echo Warn:解析失败
+          return 1;
+     fi
+  }||{
+      echo "Error: host命令缺失或传递的参数数量有误"
+      return 1;
+  }
+    echo $remote >$base/${1}IP
+    dnat $1 $remote $3
 }
 
-# 列出所有规则
-list_rules() {
-  echo "当前DNAT规则列表："
-  echo "----------------------------------------"
-  iptables -t nat -L PREROUTING -n --line-number | grep DNAT | grep "dpt:" > $RULES_FILE
-  cat $RULES_FILE | nl -v 1
-  echo "----------------------------------------"
+
+echo "3. 开始监听域名解析变化"
+echo ""
+while true ;
+do
+## 获取本机地址
+localIP=$(ip -o -4 addr list | grep -Ev '\s(docker|lo)' | awk '{print $4}' | cut -d/ -f1 | grep -Ev '(^127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^172\.1[6-9]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^172\.2[0-9]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^172\.3[0-1]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^192\.168\.[0-9]{1,3}\.[0-9]{1,3}$)')
+if [ "${localIP}" = "" ]; then
+        localIP=$(ip -o -4 addr list | grep -Ev '\s(docker|lo)' | awk '{print $4}' | cut -d/ -f1|head -n 1 )
+fi
+echo  "本机网卡IP [$localIP]"
+cat > $lastConfigTmp <<EOF
+iptables -t nat -F PREROUTING
+iptables -t nat -F POSTROUTING
+EOF
+arr1=(`cat $conf`)
+for cell in ${arr1[@]}
+do
+    arr2=(`echo $cell|tr ":" " "|tr ">" " "`)  #arr2=16 REJECT 0.0.0.0/0
+    # 过滤非法的行
+    [ "${arr2[2]}" != "" -a "${arr2[3]}" = "" ]&& testVars ${arr2[0]}  ${arr2[1]} ${arr2[2]}&&{
+        echo "转发规则： ${arr2[0]} => ${arr2[1]}:${arr2[2]}"
+        dnatIfNeed ${arr2[0]} ${arr2[1]} ${arr2[2]}
+    }
+done
+
+lastConfigTmpStr=`cat $lastConfigTmp`
+lastConfigStr=`cat $lastConfig`
+if [ "$firstAfterBoot" = "1" -o "$lastConfigTmpStr" != "$lastConfigStr" ];then
+    echo '更新iptables规则[DOING]'
+    source $lastConfigTmp
+    cat $lastConfigTmp > $lastConfig
+    echo '更新iptables规则[DONE]，新规则如下：'
+    echo "###########################################################"
+    iptables -L PREROUTING -n -t nat --line-number
+    iptables -L POSTROUTING -n -t nat --line-number
+    echo "###########################################################"
+else
+ echo "iptables规则未变更"
+fi
+
+firstAfterBoot=0
+echo '' > $lastConfigTmp
+sleep 60
+echo ''
+echo ''
+echo ''
+done    
+AAAA
+echo 
+
+
+cat > /lib/systemd/system/dnat.service <<\EOF
+[Unit]
+Description=动态设置iptables转发规则
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/root/
+EnvironmentFile=
+ExecStart=/bin/bash /usr/local/bin/dnat.sh
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable dnat > /dev/null 2>&1
+service dnat stop > /dev/null 2>&1
+service dnat start > /dev/null 2>&1
 }
 
-# 保存规则
-save_rules() {
-	if ! command -v netfilter-persistent &>/dev/null; then
-		install iptables-persistent
-	fi
-  
-	echo "正在保存规则..."
-	eval $IPTABLES_SAVE_CMD
+
+## 获取本机地址
+localIP=$(ip -o -4 addr list | grep -Ev '\s(docker|lo)' | awk '{print $4}' | cut -d/ -f1 | grep -Ev '(^127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^172\.1[6-9]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^172\.2[0-9]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^172\.3[0-1]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|(^192\.168\.[0-9]{1,3}\.[0-9]{1,3}$)')
+if [ "${localIP}" = "" ]; then
+        localIP=$(ip -o -4 addr list | grep -Ev '\s(docker|lo)' | awk '{print $4}' | cut -d/ -f1|head -n 1 )
+fi
+
+
+addDnat(){
+    local localport=
+    local remoteport=
+    local remotehost=
+    local valid=
+    echo -n "请输入本机端口 (例如 80): " ;read localport
+    echo -n "请输入目标端口 (例如 80): " ;read remoteport
+    # echo $localport $remoteport
+    # 判断端口是否为数字
+    echo "$localport"|[ -n "`sed -n '/^[0-9][0-9]*$/p'`" ] && echo $remoteport |[ -n "`sed -n '/^[0-9][0-9]*$/p'`" ]||{
+        echo  -e "${red}本地端口和目标端口请输入数字！！${black}"
+        return 1;
+    }
+
+    echo -n "请输入目标域名/IP: " ;read remotehost
+
+
+    sed -i "s/^$localport.*/$localport>$remotehost:$remoteport/g" $conf
+    [ "$(cat $conf|grep "$localport>$remotehost:$remoteport")" = "" ]&&{
+            cat >> $conf <<LINE
+$localport>$remotehost:$remoteport
+LINE
+    }
+    echo "成功添加转发规则 $localport>$remotehost:$remoteport"
+    setupService
+    break_end
+}
+
+rmDnat(){
+    local localport=
+    echo -n "本地端口号:" ;read localport
+    sed -i "/^$localport>.*/d" $conf
+    echo "done!"
+    break_end
+}
+
+testVars(){
+    local localport=$1
+    local remotehost=$2
+    local remoteport=$3
+    # 判断端口是否为数字
+    local valid=
+    echo "$localport"|[ -n "`sed -n '/^[0-9][0-9]*$/p'`" ] && echo $remoteport |[ -n "`sed -n '/^[0-9][0-9]*$/p'`" ]||{
+       # echo  -e "${red}本地端口和目标端口请输入数字！！${black}";
+       return 1;
+    }
+}
+
+lsDnat(){
+    arr1=(`cat $conf`)
+for cell in ${arr1[@]}  
+do
+    arr2=(`echo $cell|tr ":" " "|tr ">" " "`)  #arr2=16 REJECT 0.0.0.0/0
+    # 过滤非法的行
+    [ "${arr2[2]}" != "" -a "${arr2[3]}" = "" ]&& testVars ${arr2[0]}  ${arr2[1]} ${arr2[2]}&&{
+        echo "转发规则： ${arr2[0]}>${arr2[1]}:${arr2[2]}"
+    }
+done
+}
+
+uninstall() {
+	systemctl disable --now dnat
+	rm -rf $base
+	rm -f /lib/systemd/system/dnat.service
+	rm -f /usr/local/bin/dnat.sh
+	#iptables -t nat -F PREROUTING
+	#iptables -t nat -F POSTROUTING
+	break_end
 }
 
 break_end() {
@@ -127,6 +266,7 @@ break_end() {
       show_menu
 }
 
+
 # 交互式菜单
 show_menu() {
   while true; do
@@ -137,16 +277,23 @@ show_menu() {
     echo "1. 添加端口转发规则"
     echo "2. 删除端口转发规则"
     echo "3. 列出所有规则"
+    echo "4. 查看iptables配置"
+    echo "5. 卸载此脚本"
     echo "——————————————————————————————"
     echo "0. 退出"
     echo "=============================="
     read -p "请输入选项 [0-3]: " CHOICE
 
     case $CHOICE in
-      1) add_rule ;;
-      2) del_rule ;;
-      3) list_rules ;;
-      #4) save_rules ;;
+      1) addDnat ;;
+      2) rmDnat ;;
+      3) lsDnat ;;
+      4) echo "###########################################################"
+         iptables -L PREROUTING -n -t nat --line-number
+         iptables -L POSTROUTING -n -t nat --line-number
+         echo "###########################################################"
+        ;;
+      5) uninstall ;;
       0) exit 0 ;;
       *) echo "无效选项！" ;;
     esac
