@@ -210,7 +210,7 @@ addDnat(){
 $localport>$remotehost:$remoteport
 LINE
     }
-    echo "成功添加转发规则 $localport>$remotehost:$remoteport"
+    echo "成功添加转发规则 $localport > $remotehost:$remoteport"
     setupService
 }
 
@@ -240,7 +240,7 @@ do
     arr2=(`echo $cell|tr ":" " "|tr ">" " "`)  #arr2=16 REJECT 0.0.0.0/0
     # 过滤非法的行
     [ "${arr2[2]}" != "" -a "${arr2[3]}" = "" ]&& testVars ${arr2[0]}  ${arr2[1]} ${arr2[2]}&&{
-        echo "转发规则： ${arr2[0]}>${arr2[1]}:${arr2[2]}"
+        echo "转发规则： ${arr2[0]} > ${arr2[1]}:${arr2[2]}"
     }
 done
 }
@@ -279,6 +279,7 @@ show_menu() {
     echo "——————————————————————————————"
     echo "0. 退出"
     echo "=============================="
+    echo
     read -p "请输入选项 [0-3]: " CHOICE
 
     case $CHOICE in
