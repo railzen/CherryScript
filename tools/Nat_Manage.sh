@@ -212,7 +212,6 @@ LINE
     }
     echo "成功添加转发规则 $localport>$remotehost:$remoteport"
     setupService
-    break_end
 }
 
 rmDnat(){
@@ -220,7 +219,6 @@ rmDnat(){
     echo -n "本地端口号:" ;read localport
     sed -i "/^$localport>.*/d" $conf
     echo "done!"
-    break_end
 }
 
 testVars(){
@@ -254,7 +252,6 @@ uninstall() {
 	rm -f /usr/local/bin/dnat.sh
 	#iptables -t nat -F PREROUTING
 	#iptables -t nat -F POSTROUTING
-	break_end
 }
 
 break_end() {
@@ -285,15 +282,20 @@ show_menu() {
     read -p "请输入选项 [0-3]: " CHOICE
 
     case $CHOICE in
-      1) addDnat ;;
-      2) rmDnat ;;
-      3) lsDnat ;;
+      1) addDnat 
+        break_end ;;
+      2) rmDnat 
+        break_end ;;
+      3) lsDnat 
+        break_end ;;
       4) echo "###########################################################"
          iptables -L PREROUTING -n -t nat --line-number
          iptables -L POSTROUTING -n -t nat --line-number
          echo "###########################################################"
+         break_end
         ;;
-      5) uninstall ;;
+      5) uninstall 
+        break_end ;;
       0) exit 0 ;;
       *) echo "无效选项！" ;;
     esac
