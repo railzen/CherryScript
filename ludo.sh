@@ -4690,39 +4690,44 @@ clear
 
 # 检查变量和初始化变量
 chech_dependance() { 
-# 初始化变量
-Yellow='\033[33m'; White='\033[0m'; Green='\033[0;32m'; Blue='\033[0;34m'; Red='\033[31m'; Gray='\e[37m'; LightBlue='\033[96m'; DarkYellow='\033[93m'
-SYSCTLCONF=/etc/sysctl.conf
-GAICONF=/etc/gai.conf
-MARK="# CherryModified"
+    # 初始化变量
+    Yellow='\033[33m'; White='\033[0m'; Green='\033[0;32m'; Blue='\033[0;34m'; Red='\033[31m'; Gray='\e[37m'; LightBlue='\033[96m'; DarkYellow='\033[93m'
+    SYSCTLCONF=/etc/sysctl.conf
+    GAICONF=/etc/gai.conf
+    MARK="# CherryModified"
 
-# 检查CURL
-if [ ! -f /usr/bin/curl ]; then install curl; fi; 
-# 检查是否之前安装，如果没安装过的话，询问安装依赖
-if [ ! -f /usr/local/bin/ludo ]; then
-    read -p "It's first run, Install dependencies？[Y/n] " yn
-    # 如果是回车，也当作y
-    [[ -z "${yn}" ]] && yn="y"
-    if [[ ${yn} == [Yy] ]]; then
-        install curl wget sudo net-tools ufw
+    # 检查CURL
+    if [ ! -f /usr/bin/curl ]; then install curl; fi; 
+    # 检查是否之前安装，如果没安装过的话，询问安装依赖
+    if [ ! -f /usr/local/bin/ludo ]; then
+        read -p "It's first run, Install dependencies？[Y/n] " yn
+        # 如果是回车，也当作y
+        [[ -z "${yn}" ]] && yn="y"
+        if [[ ${yn} == [Yy] ]]; then
+            install curl wget sudo net-tools ufw
+        fi
     fi
-fi
 
-# 初始化环境
-mkdir ${work_path} > /dev/null 2>&1
-mkdir ${work_path}/work > /dev/null 2>&1
-mv -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
-cp -f ${work_path}/ludo.sh /usr/local/bin/ludo > /dev/null 2>&1
-cd ${work_path}/work
+    # 初始化环境
+    mkdir ${work_path} > /dev/null 2>&1
+    mkdir ${work_path}/work > /dev/null 2>&1
+    mv -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
+    cp -f ${work_path}/ludo.sh /usr/local/bin/ludo > /dev/null 2>&1
+    cd ${work_path}/work
 
-sh_new_ver=$(curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh"|grep 'main_version="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1)
+    sh_new_ver=$(curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh"|grep 'main_version="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1)
 	startup_check_new_version="false"
 	if [[ ${sh_new_ver} != ${main_version} ]]; then
 	    startup_check_new_version="true"
 	fi
 }
 
-# =====================================脚本从此处开始 =========================================
+
+# ===========================================================================================
+# =====================脚本从此处开始 =========================================================
+# =====================卸载命令：rm -rf /opt/CherryScript/ /usr/local/bin/ludo================
+# ===========================================================================================
+
 if [[ ! $# = 0 && $1 = "dir" ]];then
     cd ${work_path}/work
     exit 0
@@ -4733,7 +4738,7 @@ elif [[ ! $# = 0 && $1 = "restart" ]];then
 elif [[ ! $# = 0 && $1 = "edit" ]];then
     # 快速重启所有本脚本创建的服务，用于更新配置
     vi $work_path/config/start.sh
-    ls /etc/systemd/system | grep Cherry- | xargs systemctl restart
+    #ls /etc/systemd/system | grep Cherry- | xargs systemctl restart
     exit 0
 fi
 
@@ -4743,4 +4748,4 @@ main_menu_start
 
 
 
-#卸载命令：rm -rf /opt/CherryScript/ /usr/local/bin/ludo
+
