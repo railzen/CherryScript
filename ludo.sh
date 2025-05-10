@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.11 Build250510"
+main_version="V1.1.12 Build250510"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -4728,6 +4728,11 @@ if [[ ! $# = 0 && $1 = "dir" ]];then
     exit 0
 elif [[ ! $# = 0 && $1 = "restart" ]];then
     # 快速重启所有本脚本创建的服务，用于更新配置
+    ls /etc/systemd/system | grep Cherry- | xargs systemctl restart
+    exit 0
+elif [[ ! $# = 0 && $1 = "edit" ]];then
+    # 快速重启所有本脚本创建的服务，用于更新配置
+    vi $work_path/config/start.sh
     ls /etc/systemd/system | grep Cherry- | xargs systemctl restart
     exit 0
 fi
