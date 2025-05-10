@@ -45,11 +45,13 @@ read -p "请输入你的选择: " choice
 case $choice in
   edit)
       vi $work_path/config/start.sh
+      clear
       exit 0
         ;;
 
   restart)
       ls /etc/systemd/system | grep Cherry- | xargs systemctl restart
+      break_end
       exit 0
         ;;
 
