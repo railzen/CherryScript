@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.12 Build250510"
+main_version="V1.1.15 Build250510"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -43,6 +43,16 @@ echo "------------------------"
 read -p "请输入你的选择: " choice
 
 case $choice in
+  edit)
+      vi $work_path/config/start.sh
+      exit 0
+        ;;
+
+  restart)
+      ls /etc/systemd/system | grep Cherry- | xargs systemctl restart
+      exit 0
+        ;;
+
   1)
     if true;then
         clear
