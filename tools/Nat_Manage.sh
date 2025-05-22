@@ -219,8 +219,9 @@ LINE
 }
 
 rmDnat(){
+    lsDnat
     local localport=
-    echo -n "本地端口号:" ;read localport
+    echo -n "请输入要删除服务的本地端口号:" ;read localport
     sed -i "/^$localport>.*/d" $conf
     echo "done!"
 }
@@ -290,9 +291,16 @@ show_menu() {
     case $CHOICE in
       1) addDnat 
         break_end ;;
-      2) rmDnat 
+      2)
+        rmDnat 
         break_end ;;
-      3) lsDnat 
+      3) 
+        if [ -f /opt/CherryScript/config/start.sh ]; then
+            echo "=============================="
+            cat /opt/CherryScript/config/start.sh
+            echo "=============================="
+        fi
+        lsDnat 
         break_end ;;
       4) echo "###########################################################"
          iptables -L PREROUTING -n -t nat --line-number
