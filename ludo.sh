@@ -4716,7 +4716,7 @@ chech_dependance() {
         # 如果是回车，也当作y
         [[ -z "${yn}" ]] && yn="y"
         if [[ ${yn} == [Yy] ]]; then
-            install curl wget sudo net-tools ufw
+            install curl wget sudo net-tools ufw unzip
         fi
     fi
 
