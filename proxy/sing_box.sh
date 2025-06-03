@@ -187,6 +187,7 @@ servername_list=(
     www.mytvsuper.com
     genshin.hoyoverse.com
     www.tesla.com
+    www.hku.hk
 )
 
 is_random_ss_method=${ss_method_list[$(shuf -i 4-6 -n1)]} # random only use ss2022
