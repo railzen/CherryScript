@@ -317,7 +317,7 @@ case $choice in
                 if [ ! -f "/etc/systemd/system/Cherry-frps.service" ];then
                     read -p "尚未安装FRPS服务，是否安装？[Y/n]" yn
                     if [[ ${yn} == [Yy] ]]; then
-                        mkdir ${work_path}/frps && cd ${work_path}/frps
+                        mkdir -p ${work_path}/frps && cd ${work_path}/frps
                         wget -q -nc --no-check-certificate https://raw.githubusercontent.com/railzen/DownloadStation/main/Software/frps && chmod +x frps
                         wget -q -nc --no-check-certificate https://raw.githubusercontent.com/railzen/DownloadStation/main/Software/frps.toml
                         mv -f frps.toml /opt/CherryScript/config/frps.toml
@@ -360,7 +360,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-frps.service
               # 安装最新版本 [https://github.com/go-gost/gost/releases](https://github.com/go-gost/gost/releases)
                 bash <(curl -fsSL https://github.com/go-gost/gost/raw/master/install.sh) --install
                 rm -rf ./*
-                mkdir ${work_path}/config
+                mkdir -p ${work_path}/config
                     if [ ! -f "${work_path}/config/start.sh" ];then
                         echo "#!/usr/bin/env bash" > ${work_path}/config/start.sh
                     fi
@@ -3763,7 +3763,7 @@ EOF
               read -p "确定继续吗？(Y/N): " choice
               case "$choice" in
                 [Yy])
-                    mkdir ${work_path}/config
+                    mkdir -p ${work_path}/config
                     if [ ! -f "${work_path}/config/start.sh" ];then
                         echo "#!/usr/bin/env bash" > ${work_path}/config/start.sh
                     fi
@@ -4721,8 +4721,7 @@ chech_dependance() {
     fi
 
     # 初始化环境
-    mkdir ${work_path} > /dev/null 2>&1
-    mkdir ${work_path}/work > /dev/null 2>&1
+    mkdir -p ${work_path}/work > /dev/null 2>&1
     mv -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
     cp -f ${work_path}/ludo.sh /usr/local/bin/ludo > /dev/null 2>&1
     cd ${work_path}/work
