@@ -21,7 +21,6 @@ _red_bg() { echo -e "\e[41m$@${none}"; }
 
 # wget installed or none
 is_wget=$(type -P wget)
-
 is_core=sing-box
 is_core_name=sing-box
 is_core_dir=/etc/$is_core
@@ -43,36 +42,38 @@ is_caddy_service=$(systemctl list-units --full -all | grep caddy.service)
 is_http_port=80
 is_https_port=443
 
-tmp_var_lists=(
-    tmpcore
-    tmpsh
-    tmpjq
-    is_core_ok
-    is_sh_ok
-    is_jq_ok
-    is_pkg_ok
+servername_list=(
+    gateway.icloud.com
+    itunes.apple.com
+    swdist.apple.com
+    swcdn.apple.com
+    updates.cdn-apple.com
+    mensura.cdn-apple.com
+    osxapps.itunes.apple.com
+    aod.itunes.apple.com
+    download-installer.cdn.mozilla.net
+    addons.mozilla.org
+    s0.awsstatic.com
+    d1.awsstatic.com
+    images-na.ssl-images-amazon.com
+    m.media-amazon.com
+    player.live-video.net
+    one-piece.com
+    lol.secure.dyn.riotcdn.net
+    www.lovelive-anime.jp
+    www.swift.com
+    academy.nvidia.com
+    www.cisco.com
+    www.samsung.com
+    www.amd.com
+    cdn-dynmedia-1.microsoft.com
+    software.download.prss.microsoft.com
+    dl.google.com
+    www.google-analytics.com
+    www.mytvsuper.com
+    genshin.hoyoverse.com
+    www.tesla.com
 )
-
-# tmp dir
-tmpdir=$(mktemp -u)
-[[ ! $tmpdir ]] && {
-    tmpdir=/tmp/tmp-$RANDOM
-}
-
-# set up var
-for i in ${tmp_var_lists[*]}; do
-    export $i=$tmpdir/$i
-done
-
-is_err=$(_red_bg 错误!)
-is_warn=$(_red_bg 警告!)
-err() {
-    echo -e "\n$is_err $@\n" && exit 1
-}
-
-warn() {
-    echo -e "\n$is_warn $@\n"
-}
 
 protocol_list=(
     TUIC
@@ -156,41 +157,40 @@ change_list=(
     "更改伪装网站"
     "更改用户名 (Username)"
 )
-servername_list=(
-    gateway.icloud.com
-    itunes.apple.com
-    swdist.apple.com
-    swcdn.apple.com
-    updates.cdn-apple.com
-    mensura.cdn-apple.com
-    osxapps.itunes.apple.com
-    aod.itunes.apple.com
-    download-installer.cdn.mozilla.net
-    addons.mozilla.org
-    s0.awsstatic.com
-    d1.awsstatic.com
-    images-na.ssl-images-amazon.com
-    m.media-amazon.com
-    player.live-video.net
-    one-piece.com
-    lol.secure.dyn.riotcdn.net
-    www.lovelive-anime.jp
-    www.swift.com
-    academy.nvidia.com
-    www.cisco.com
-    www.samsung.com
-    www.amd.com
-    cdn-dynmedia-1.microsoft.com
-    software.download.prss.microsoft.com
-    dl.google.com
-    www.google-analytics.com
-    www.mytvsuper.com
-    genshin.hoyoverse.com
-    www.tesla.com
+
+tmp_var_lists=(
+    tmpcore
+    tmpsh
+    tmpjq
+    is_core_ok
+    is_sh_ok
+    is_jq_ok
+    is_pkg_ok
 )
 
 is_random_ss_method=${ss_method_list[$(shuf -i 4-6 -n1)]} # random only use ss2022
 is_random_servername=${servername_list[$(shuf -i 0-${#servername_list[@]} -n1) - 1]}
+
+# tmp dir
+tmpdir=$(mktemp -u)
+[[ ! $tmpdir ]] && {
+    tmpdir=/tmp/tmp-$RANDOM
+}
+
+# set up var
+for i in ${tmp_var_lists[*]}; do
+    export $i=$tmpdir/$i
+done
+
+is_err=$(_red_bg 错误!)
+is_warn=$(_red_bg 警告!)
+err() {
+    echo -e "\n$is_err $@\n" && exit 1
+}
+
+warn() {
+    echo -e "\n$is_warn $@\n"
+}
 
 msg() {
     echo -e "$@"
@@ -714,6 +714,13 @@ change() {
         is_new_servername=$3
         [[ ! $is_reality ]] && err "($is_config_file) 不支持更改 serverName."
         [[ $is_auto ]] && is_new_servername=$is_random_servername
+        if [[ $is_reality ]]; then
+            echo "参考域名："
+            for server in "${servername_list[@]}"; do
+                echo "$server"
+            done
+        fi
+
         [[ ! $is_new_servername ]] && ask string is_new_servername "请输入新的 serverName:"
         is_servername=$is_new_servername
         add $net
