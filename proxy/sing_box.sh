@@ -715,6 +715,7 @@ change() {
         [[ ! $is_reality ]] && err "($is_config_file) 不支持更改 serverName."
         [[ $is_auto ]] && is_new_servername=$is_random_servername
         if [[ $is_reality ]]; then
+            clear
             echo "参考域名："
             for server in "${servername_list[@]}"; do
                 echo "$server"
