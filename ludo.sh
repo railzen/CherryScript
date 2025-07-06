@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.15 Build250510"
+main_version="V1.1.16 Build250707"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -318,8 +318,8 @@ case $choice in
                     read -p "尚未安装FRPS服务，是否安装？[Y/n]" yn
                     if [[ ${yn} == [Yy] ]]; then
                         mkdir -p ${work_path}/frps && cd ${work_path}/frps
-                        wget -q -nc --no-check-certificate https://raw.githubusercontent.com/railzen/DownloadStation/main/Software/frps && chmod +x frps
-                        wget -q -nc --no-check-certificate https://raw.githubusercontent.com/railzen/DownloadStation/main/Software/frps.toml
+                        wget -q -nc --no-check-certificate https://raw.githubusercontent.com/railzen/CherryScript/main/tools/frps && chmod +x frps
+                        wget -q -nc --no-check-certificate https://raw.githubusercontent.com/railzen/CherryScript/main/tools/frps.toml
                         mv -f frps.toml /opt/CherryScript/config/frps.toml
                         echo '
 [Unit]
