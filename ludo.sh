@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.16 Build250707"
+main_version="V1.1.17 Build250715"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -4725,9 +4725,13 @@ chech_dependance() {
     mv -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
     cp -f ${work_path}/ludo.sh /usr/local/bin/ludo > /dev/null 2>&1
     cd ${work_path}/work
-
-    sh_new_ver=$(curl -s "https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh"|grep 'main_version="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1)
 	startup_check_new_version="false"
+    sh_new_ver=$(curl --connect-timeout 2 --max-time 2 -s "https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh"|grep 'main_version="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1)
+	
+	if [ $? -ne 0 ]; then
+        startup_check_new_version="false"
+        return
+    fi
 	if [[ ${sh_new_ver} != ${main_version} ]]; then
 	    startup_check_new_version="true"
 	fi
