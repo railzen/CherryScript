@@ -1,6 +1,6 @@
 #!/bin/bash
 author=railzen
-is_sh_ver=V1.0.5
+is_sh_ver=V1.0.6
 
 # bash fonts colors
 red='\e[31m'
@@ -1897,9 +1897,11 @@ main_menu_show() {
     echo "2.更改配置"
     echo "3.查看配置"
     echo "4.删除配置"
-    echo "5.运行管理"
-    echo "6.更新"
-    echo "7.卸载"
+    echo "5.启动服务"
+    echo "6.停止服务"
+    echo "7.重启服务"
+    echo "8.更新"
+    echo "9.卸载"
     msg "-------------------------------------------------------"
     echo "0.退出"
     msg "-------------------------------------------------------"
@@ -1919,17 +1921,24 @@ main_menu_show() {
         del
         ;;
     5)
-        ask list is_do_manage "启动 停止 重启"
-        manage $REPLY &
-        msg "\n管理状态执行: $(_green $is_do_manage)\n"
+        manage start &
+        msg "\n管理状态执行: $(_green 启动)\n"
         ;;
     6)
+        manage stop &
+        msg "\n管理状态执行: $(_green 停止)\n"
+        ;;
+    7)
+        manage restart &
+        msg "\n管理状态执行: $(_green 重启)\n"
+        ;;
+    8)
         is_tmp_list=("更新$is_core_name" "更新脚本")
         [[ $is_caddy ]] && is_tmp_list+=("更新Caddy")
         ask list is_do_update null "\n请选择更新:\n"
         update $REPLY
         ;;
-    7)
+    9)
         uninstall
         ;;
     0)
