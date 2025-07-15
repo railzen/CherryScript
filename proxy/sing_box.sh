@@ -1,6 +1,6 @@
 #!/bin/bash
 author=railzen
-is_sh_ver=V1.0.6
+is_sh_ver=V1.0.7
 
 # bash fonts colors
 red='\e[31m'
@@ -871,10 +871,10 @@ uninstall() {
     rm -rf $is_core_dir $is_log_dir $is_sh_bin ${is_sh_bin/$is_core/sb} /lib/systemd/system/$is_core.service
 
     #卸载旧版脚本
-    systemctl stop sing-box.service
-    rc-service sing-box stop
-    rm -rf /etc/systemd/system/sing-box.service
-    rm -rf /opts/CherryScript/singbox_mux
+    systemctl stop sing-box.service > /dev/null 2>&1
+    rc-service sing-box stop > /dev/null 2>&1
+    rm -rf /etc/systemd/system/sing-box.service > /dev/null 2>&1
+    rm -rf /opts/CherryScript/singbox_mux > /dev/null 2>&1
     #结束卸载旧版脚本
 
     sed -i "/alias $is_core=/d" /root/.bashrc
