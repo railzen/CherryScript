@@ -1897,9 +1897,10 @@ main_menu_show() {
     echo "2.更改配置"
     echo "3.查看配置"
     echo "4.删除配置"
-    echo "5.启动服务"
-    echo "6.停止服务"
-    echo "7.重启服务"
+    [[ -d $is_core_dir/bin && -d $is_sh_dir && -d $is_conf_dir ]] && \
+    echo "5.启动服务" && \
+    echo "6.停止服务" && \
+    echo "7.重启服务" && \
     echo "8.更新"
     echo "9.卸载"
     msg "-------------------------------------------------------"
