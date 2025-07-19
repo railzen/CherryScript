@@ -17,7 +17,8 @@ echo -e             "  \_____|_|  |_|______|_|  \_\_|  \_\ |_|   ${White}\n"
 echo -e "${LightBlue}Cherry Script $main_version (Support for Ubuntu/Debian)${White}"
 echo -e "${LightBlue}Personal use, unauthorized use prohibited!${White}"
 echo -e "${LightBlue}------- Press ${DarkYellow}ludo${LightBlue} to start script -------${White}"
-ufw status | awk '$2 == "ALLOW" && $1 ~ /(^|,|:|\/)22(\/tcp)?($|,|:)/ {found=1} END {echo -e (found ? "${DarkYellow}UFW Port 22 Open${White}" : "${LightBlue}UFW Port 22 Close${White}")}'
+command -v ufw >/dev/null && ufw status | grep -q '^Status: active' && ufw status | awk '$2 == "ALLOW" && $1 ~ /(^|,|:|\/)22(\/tcp)?($|,|:)/ {found=1} END {exit !found}' && echo "${DarkYellow}SSH Port 22 Open${White}" || echo "${LightBlue}SSH Port 22 Close${White}"
+
 echo "------------------------"
 echo "1. 系统信息查询"
 echo "2. 系统更新"
