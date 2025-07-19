@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.18 Build250715"
+main_version="V1.1.20 Build250720"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -4659,7 +4659,7 @@ add_sshkey() {
 read -p "请输入SSH公钥： " sshPublicKey
 
 if [ -z "$sshPublicKey" ]; then
-    sshPublicKey="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCrQNcEPHhji5+5Kwozb6LlTkplfhIicDJKuOI0O8xMBFA8p8vqhwf1eVT0LA3tTlmtRSIk8tAW1L/vAVzzNn7BZ/uJCEnlF4gZj1YkMILXE4zaB5Zy13b5Ngxzkm3ErpJ1vhKwueUUBd0VnOeqIcLIpYiuysykJh46YzS0ivX7jNw6I1aoonjWv8xPDdE84lpik6xtREZMHK1Lp7MAh7ez1k8X6JUHU9i7pbS3M66a8//qAzCy1vRtn0DvaWpfcw2XWXuxA/vPSmNA1ewdPObH3iNcVYtGCL9ECPPWdOlssskvxTM0XmGT9JC5bExqSJ1ODttkN5imETN0pWcOpT5L"
+    sshPublicKey="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPleKQeroz6fG0LHfvYjjxN6L0zVztSfXbUogHs+jYrq"
     echo -e "${red}您输入的公钥信息为空！这里展示一个示范公钥，请您注意删除 ${white}"
 fi
 
