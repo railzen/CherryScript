@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.21 Build250720"
+main_version="V1.1.22 Build250720"
 work_path="/opt/CherryScript"
 
 main_menu_start() {
@@ -17,7 +17,7 @@ echo -e             "  \_____|_|  |_|______|_|  \_\_|  \_\ |_|   ${White}\n"
 echo -e "${LightBlue}Cherry Script $main_version (Support for Ubuntu/Debian)${White}"
 echo -e "${LightBlue}Personal use, unauthorized use prohibited!${White}"
 echo -e "${LightBlue}------- Press ${DarkYellow}ludo${LightBlue} to start script -------${White}"
-command -v ufw >/dev/null && ufw status | grep -q '^Status: active' && ufw status | awk '$2 == "ALLOW" && $1 ~ /(^|,|:|\/)22(\/tcp)?($|,|:)/ {found=1} END {exit !found}' && echo -e "${DarkYellow}SSH Port 22 Open${White}" || echo -e "${LightBlue}SSH Port 22 Close${White}"
+command -v ufw >/dev/null && ufw status | grep -q '^Status: active' && ssh_port=$(ss -tnlp | awk '/sshd/ && /LISTEN/ {gsub(".*:", "", $4); print $4; exit}') && ufw status | awk -v p="$ssh_port" '$2 == "ALLOW" && $1 ~ "(^|,|:|/)" p "(/tcp)?($|,|:)" {f=1} END {exit !f}' && echo -e "${DarkYellow}UFW Port $ssh_port Open${White}" || echo -e "${LightBlue}UFW Port $ssh_port Close${White}"
 
 echo "------------------------"
 echo "1. 系统信息查询"
