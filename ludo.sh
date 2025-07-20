@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.22 Build250720"
+main_version="V1.1.23 Build250720"
 work_path="/opt/CherryScript"
+ssh_default_public_key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPleKQeroz6fG0LHfvYjjxN6L0zVztSfXbUogHs+jYrq"  #如果使用本脚本请把公钥改成自己的
 
 main_menu_start() {
 while true; do
@@ -275,9 +276,9 @@ case $choice in
               clear
               echo "工具已安装，使用方法如下："
               tmux --help
+              clear
               ;;
             10)
-              clear
               install ffmpeg
               clear
               echo "工具已安装，使用方法如下："
@@ -358,6 +359,7 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-frps.service
              16)
               clear
               read -p "是否确认安装gost并同步安装开机自启服务？[Y/n]" yn
+              [[ -z "${yn}" ]] && yn="y"
               if [[ ${yn} == [Yy] ]]; then
               # 安装最新版本 [https://github.com/go-gost/gost/releases](https://github.com/go-gost/gost/releases)
                 bash <(curl -fsSL https://github.com/go-gost/gost/raw/master/install.sh) --install
@@ -4661,10 +4663,11 @@ add_sshkey() {
 read -p "请输入SSH公钥： " sshPublicKey
 
 if [ -z "$sshPublicKey" ]; then
-    sshPublicKey="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPleKQeroz6fG0LHfvYjjxN6L0zVztSfXbUogHs+jYrq"
+    sshPublicKey=$ssh_default_public_key
     echo -e "${red}您输入的公钥信息为空！这里展示一个示范公钥，请您注意删除 ${white}"
 fi
 
+mkdir -p ~/.ssh
 echo ${sshPublicKey} >> ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
 
