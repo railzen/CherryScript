@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.23 Build250720"
+main_version="V1.1.24 Build250817"
 work_path="/opt/CherryScript"
 ssh_default_public_key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPleKQeroz6fG0LHfvYjjxN6L0zVztSfXbUogHs+jYrq"  #如果使用本脚本请把公钥改成自己的
 
@@ -2924,14 +2924,25 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
 
                   case $sub_choice in
                       1)
+                        # 检查 lsb_release 是否存在
+                        if ! command -v lsb_release >/dev/null 2>&1; then
+                            # 判断使用的是 apt 还是 yum（Debian系 和 RHEL/CentOS系 都兼容）
+                            if command -v apt-get >/dev/null 2>&1; then
+                                sudo apt-get update -qq
+                                sudo apt-get install -y -qq lsb-release
+                            elif command -v yum >/dev/null 2>&1; then
+                                sudo yum install -y -q redhat-lsb-core
+                            fi
+                        fi
+
                         apt purge -y 'linux-*xanmod1*'
                         update-grub
 
-                        wget -qO - https://dl.xanmod.org/archive.key | gpg --dearmor -o /usr/share/keyrings/xanmod-archive-keyring.gpg --yes
+                        wget -qO - https://dl.xanmod.org/archive.key | gpg --dearmor -vo /etc/apt/keyrings/xanmod-archive-keyring.gpg
                         #wget -qO - https://raw.githubusercontent.com/railzen/CherryScript/main/tools/cherry/config/archive.key | gpg --dearmor -o /usr/share/keyrings/xanmod-archive-keyring.gpg --yes
 
                         # 步骤3：添加存储库
-                        echo 'deb [signed-by=/usr/share/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org releases main' | tee /etc/apt/sources.list.d/xanmod-release.list
+                        echo 'deb [signed-by=/etc/apt/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org $(lsb_release -sc) main' | tee /etc/apt/sources.list.d/xanmod-release.list
 
                         version=$(wget -q https://dl.xanmod.org/check_x86-64_psabi.sh && chmod +x check_x86-64_psabi.sh && ./check_x86-64_psabi.sh | grep -oP 'x86-64-v\K\d+|x86-64-v\d+')
                         # version=$(wget -q https://raw.githubusercontent.com/railzen/CherryScript/main/tools/check_x86-64_psabi.sh && chmod +x check_x86-64_psabi.sh && ./check_x86-64_psabi.sh | grep -oP 'x86-64-v\K\d+|x86-64-v\d+')
