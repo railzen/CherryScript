@@ -1292,8 +1292,8 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
               ;;
           7)
             clear
-            curl -L https://raw.githubusercontent.com/nezhahq/scripts/refs/heads/v0/install.sh -o nezha.sh && chmod +x nezha.sh 
-            ./nezha.sh
+            curl -L https://raw.githubusercontent.com/railzen/nezhazero/main/installScript/nezhazero.sh -o nezhazero.sh && chmod +x nezhazero.sh 
+            ./nezhazero.sh
               ;;
 
           8)
