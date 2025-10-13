@@ -2108,7 +2108,10 @@ chenk_install() {
     # create sh dir...
     mkdir -p $is_sh_dir
 
-    #install_script_start
+    # create soft link
+    if [[ -d $is_core_dir && -d "/opt/CherryScript" && ! -d "/opt/CherryScript/sing-box" ]]; then
+        ln -s /etc/sing-box /opt/CherryScript/sing-box
+    fi
 
     cd $is_sh_dir
     curl -sSO "https://raw.githubusercontent.com/railzen/CherryScript/main/proxy/sing_box.sh"
