@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.24 Build250817"
+main_version="V1.1.25 Build251103"
 work_path="/opt/CherryScript"
 ssh_default_public_key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPleKQeroz6fG0LHfvYjjxN6L0zVztSfXbUogHs+jYrq"  #如果使用本脚本请把公钥改成自己的
 
@@ -320,6 +320,7 @@ case $choice in
                 if [ ! -f "/etc/systemd/system/Cherry-frps.service" ];then
                     read -p "尚未安装FRPS服务，是否安装？[Y/n]" yn
                     if [[ ${yn} == [Yy] ]]; then
+                        mkdir -p ${work_path}/config
                         mkdir -p ${work_path}/frps && cd ${work_path}/frps
                         wget -q -nc --no-check-certificate https://raw.githubusercontent.com/railzen/CherryScript/main/tools/frps && chmod +x frps
                         wget -q -nc --no-check-certificate https://raw.githubusercontent.com/railzen/CherryScript/main/tools/frps.toml
