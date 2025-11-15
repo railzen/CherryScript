@@ -73,6 +73,7 @@ servername_list=(
     www.mytvsuper.com
     genshin.hoyoverse.com
     www.tesla.com
+    learn.microsoft.com
 )
 
 protocol_list=(
