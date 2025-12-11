@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.25 Build251103"
+main_version="V1.1.26 Build251210"
 work_path="/opt/CherryScript"
 ssh_default_public_key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPleKQeroz6fG0LHfvYjjxN6L0zVztSfXbUogHs+jYrq"  #如果使用本脚本请把公钥改成自己的
 
@@ -1180,11 +1180,10 @@ WantedBy=multi-user.target' > /etc/systemd/system/Cherry-startup.service
 
             panelurl="https://1panel.cn/"
 
-
-            centos_mingling="curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh"
+            centos_mingling="curl -sSL https://resource.fit2cloud.com/1panel/package/v2/quick_start.sh -o quick_start.sh"
             centos_mingling2="sh quick_start.sh"
 
-            ubuntu_mingling="curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh"
+            ubuntu_mingling="curl -sSL https://resource.fit2cloud.com/1panel/package/v2/quick_start.sh -o quick_start.sh"
             ubuntu_mingling2="bash quick_start.sh"
 
             install_panel
