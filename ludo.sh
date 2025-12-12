@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #cp -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
 
-main_version="V1.1.26 Build251210"
+main_version="V1.1.27 Build251212"
 work_path="/opt/CherryScript"
 ssh_default_public_key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPleKQeroz6fG0LHfvYjjxN6L0zVztSfXbUogHs+jYrq"  #如果使用本脚本请把公钥改成自己的
 
@@ -4738,6 +4738,7 @@ chech_dependance() {
 
     # 初始化环境
     mkdir -p ${work_path}/work > /dev/null 2>&1
+	chmod +x ./ludo.sh
     mv -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
     cp -f ${work_path}/ludo.sh /usr/local/bin/ludo > /dev/null 2>&1
     cd ${work_path}/work
