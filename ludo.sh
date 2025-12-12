@@ -4738,7 +4738,7 @@ chech_dependance() {
 
     # 初始化环境
     mkdir -p ${work_path}/work > /dev/null 2>&1
-	chmod +x ./ludo.sh
+	chmod +x ./ludo.sh > /dev/null 2>&1
     mv -f ./ludo.sh ${work_path}/ludo.sh > /dev/null 2>&1
     cp -f ${work_path}/ludo.sh /usr/local/bin/ludo > /dev/null 2>&1
     cd ${work_path}/work
