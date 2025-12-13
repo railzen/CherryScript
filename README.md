@@ -12,11 +12,11 @@ apt install curl wget sudo net-tools ufw
 ***
 ### 一键脚本
 ```bash
-if [ -f /usr/bin/curl ];then curl -sSO https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh;else wget -O ludo.sh https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh;fi;chmod +x ludo.sh;./ludo.sh
+curl -sSL https://ba.sh/ludo -o ludo.sh && bash ludo.sh
 ```
 or
 ```bash
-curl -sS -O https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh && chmod +x ludo.sh && bash ludo.sh
+if [ -f /usr/bin/curl ];then curl -sSO https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh;else wget -O ludo.sh https://raw.githubusercontent.com/railzen/CherryScript/main/ludo.sh;fi;chmod +x ludo.sh;./ludo.sh
 ```
 ***
 ### Cherry一键脚本 的支持列表：
